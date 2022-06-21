@@ -34,15 +34,6 @@ trait ManagesCustomer
      * @param  array  $options
      * @return \Illuminate\Support\Collection
      */
-    /* PENDING REMOVAL */
-    public function productPrices($products, array $options = [])
-    {
-        $options = array_merge([
-            'customer_country' => $this->paddleCountry(),
-        ], $options);
-
-        return Cashier::productPrices($products, $options);
-    }
 
     /**
      * Get the billable model's email address to associate with Payfast.

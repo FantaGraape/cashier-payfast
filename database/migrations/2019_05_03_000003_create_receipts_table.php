@@ -25,7 +25,6 @@ class CreateReceiptsTable extends Migration
             $table->string('amount_fee');
             $table->string('amount_net');
             $table->string('order_id')->unique();
-            $table->string('amount');
             $table->string('tax');
             $table->string('currency', 3);
             $table->integer('quantity');

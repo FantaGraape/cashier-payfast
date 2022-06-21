@@ -68,29 +68,6 @@ class Cashier
      */
     public static $orderModel = Order::class;
 
-
-
-    /**
-     * Get prices for a set of product ids.
-     *
-     * @param  array|int  $products
-     * @param  array  $options
-     * @return \Illuminate\Support\Collection
-     */
-    public static function productPrices($products, array $options = [])
-    {
-        /* Check local DB for products and prices TO DO */
-        $payload = array_merge($options, [
-            'product_ids' => implode(',', (array) $products),
-        ]);
-
-        $response = static::get('/prices', $payload)['response'];
-
-        return collect($response['products'])->map(function (array $product) use ($response) {
-            return new ProductPrice($response['customer_country'], $product);
-        });
-    }
-
     /**
      * Get the  webhook url.
      *

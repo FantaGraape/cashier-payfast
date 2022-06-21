@@ -1,23 +1,23 @@
 <?php
 
-namespace Laravel\Paddle\Http\Controllers;
+namespace EllisSystems\Payfast\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
-use Laravel\Paddle\Cashier;
-use Laravel\Paddle\Events\PaymentSucceeded;
-use Laravel\Paddle\Events\SubscriptionCancelled;
-use Laravel\Paddle\Events\SubscriptionCreated;
-use Laravel\Paddle\Events\SubscriptionPaymentFailed;
-use Laravel\Paddle\Events\SubscriptionPaymentSucceeded;
-use Laravel\Paddle\Events\SubscriptionUpdated;
-use Laravel\Paddle\Events\WebhookHandled;
-use Laravel\Paddle\Events\WebhookReceived;
-use Laravel\Paddle\Exceptions\InvalidPassthroughPayload;
-use Laravel\Paddle\Http\Middleware\VerifyWebhookSignature;
-use Laravel\Paddle\Subscription;
+use EllisSystems\Payfast\Cashier;
+use EllisSystems\Payfast\Events\PaymentSucceeded;
+use EllisSystems\Payfast\Events\SubscriptionCancelled;
+use EllisSystems\Payfast\Events\SubscriptionCreated;
+use EllisSystems\Payfast\Events\SubscriptionPaymentFailed;
+use EllisSystems\Payfast\Events\SubscriptionPaymentSucceeded;
+use EllisSystems\Payfast\Events\SubscriptionUpdated;
+use EllisSystems\Payfast\Events\WebhookHandled;
+use EllisSystems\Payfast\Events\WebhookReceived;
+use EllisSystems\Payfast\Exceptions\InvalidPassthroughPayload;
+use EllisSystems\Payfast\Http\Middleware\VerifyWebhookSignature;
+use EllisSystems\Payfast\Subscription;
 use Symfony\Component\HttpFoundation\Response;
 
 class WebhookController extends Controller
@@ -147,7 +147,7 @@ class WebhookController extends Controller
      * @param  array  $payload
      * @return void
      *
-     * @throws \Laravel\Paddle\Exceptions\InvalidPassthroughPayload
+     * @throws \EllisSystems\Payfast\Exceptions\InvalidPassthroughPayload
      */
     protected function handleSubscriptionCreated(array $payload)
     {
@@ -249,9 +249,9 @@ class WebhookController extends Controller
      * Find or create a customer based on the passthrough values and return the billable model.
      *
      * @param  string  $passthrough
-     * @return \Laravel\Paddle\Billable
+     * @return \EllisSystems\Payfast\Billable
      *
-     * @throws \Laravel\Paddle\Exceptions\InvalidPassthroughPayload
+     * @throws \EllisSystems\Payfast\Exceptions\InvalidPassthroughPayload
      */
     protected function findOrCreateCustomer(string $passthrough)
     {
@@ -271,7 +271,7 @@ class WebhookController extends Controller
      * Find the first subscription matching a Paddle subscription id.
      *
      * @param  string  $subscriptionId
-     * @return \Laravel\Paddle\Subscription|null
+     * @return \EllisSystems\Payfast\Subscription|null
      */
     protected function findSubscription(string $subscriptionId)
     {

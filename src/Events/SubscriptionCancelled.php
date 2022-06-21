@@ -1,10 +1,10 @@
 <?php
 
-namespace Laravel\Paddle\Events;
+namespace EllisSystems\Payfast\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Laravel\Paddle\Subscription;
+use EllisSystems\Payfast\Subscription;
 
 class SubscriptionCancelled
 {
@@ -13,7 +13,7 @@ class SubscriptionCancelled
     /**
      * The subscription instance.
      *
-     * @var \Laravel\Paddle\Subscription
+     * @var \EllisSystems\Payfast\Subscription
      */
     public $subscription;
 
@@ -27,7 +27,7 @@ class SubscriptionCancelled
     /**
      * Create a new event instance.
      *
-     * @param  \Laravel\Paddle\Subscription  $subscription
+     * @param  \EllisSystems\Payfast\Subscription  $subscription
      * @param  array  $payload
      * @return void
      */

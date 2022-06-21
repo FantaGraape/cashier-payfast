@@ -4,9 +4,9 @@ namespace Tests\Unit;
 
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
-use Laravel\Paddle\Cashier;
-use Laravel\Paddle\CashierFake;
-use Laravel\Paddle\Exceptions\PaddleException;
+use EllisSystems\Payfast\Cashier;
+use EllisSystems\Payfast\CashierFake;
+use EllisSystems\Payfast\Exceptions\PaddleException;
 use Tests\Feature\FeatureTestCase;
 
 class CashierFakeTest extends FeatureTestCase

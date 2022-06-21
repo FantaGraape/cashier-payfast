@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Paddle\Http\Middleware;
+namespace EllisSystems\Payfast\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;

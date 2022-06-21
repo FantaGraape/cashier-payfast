@@ -2,13 +2,13 @@
 
 namespace Tests\Feature;
 
-use Laravel\Paddle\Cashier;
-use Laravel\Paddle\Events\PaymentSucceeded;
-use Laravel\Paddle\Events\SubscriptionCancelled;
-use Laravel\Paddle\Events\SubscriptionCreated;
-use Laravel\Paddle\Events\SubscriptionPaymentSucceeded;
-use Laravel\Paddle\Events\SubscriptionUpdated;
-use Laravel\Paddle\Subscription;
+use EllisSystems\Payfast\Cashier;
+use EllisSystems\Payfast\Events\PaymentSucceeded;
+use EllisSystems\Payfast\Events\SubscriptionCancelled;
+use EllisSystems\Payfast\Events\SubscriptionCreated;
+use EllisSystems\Payfast\Events\SubscriptionPaymentSucceeded;
+use EllisSystems\Payfast\Events\SubscriptionUpdated;
+use EllisSystems\Payfast\Subscription;
 
 class WebhooksTest extends FeatureTestCase
 {

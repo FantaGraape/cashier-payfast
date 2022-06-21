@@ -2,8 +2,8 @@
 
 namespace Tests\Unit;
 
-use Laravel\Paddle\Price;
-use Laravel\Paddle\ProductPrice;
+use EllisSystems\Payfast\Price;
+use EllisSystems\Payfast\ProductPrice;
 use Money\Currency;
 use PHPUnit\Framework\TestCase;
 
@@ -97,7 +97,7 @@ class ProductPriceTest extends TestCase
      * Get a test product price object.
      *
      * @param  array  $product
-     * @return \Laravel\Paddle\ProductPrice
+     * @return \EllisSystems\Payfast\ProductPrice
      */
     private function product(array $product = [])
     {

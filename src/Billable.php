@@ -1,11 +1,11 @@
 <?php
 
-namespace Laravel\Paddle;
+namespace EllisSystems\Payfast;
 
-use Laravel\Paddle\Concerns\ManagesCustomer;
-use Laravel\Paddle\Concerns\ManagesReceipts;
-use Laravel\Paddle\Concerns\ManagesSubscriptions;
-use Laravel\Paddle\Concerns\PerformsCharges;
+use EllisSystems\Payfast\Concerns\ManagesCustomer;
+use EllisSystems\Payfast\Concerns\ManagesReceipts;
+use EllisSystems\Payfast\Concerns\ManagesSubscriptions;
+use EllisSystems\Payfast\Concerns\PerformsCharges;
 
 trait Billable
 {

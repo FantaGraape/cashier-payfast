@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use Laravel\Paddle\Cashier;
+use EllisSystems\Payfast\Cashier;
 use Tests\TestCase;
 
 class CashierTest extends TestCase

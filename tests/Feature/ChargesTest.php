@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use Laravel\Paddle\Cashier;
+use EllisSystems\Payfast\Cashier;
 
 class ChargesTest extends FeatureTestCase
 {

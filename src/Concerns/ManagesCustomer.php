@@ -1,8 +1,8 @@
 <?php
 
-namespace Laravel\Paddle\Concerns;
+namespace EllisSystems\Payfast\Concerns;
 
-use Laravel\Paddle\Cashier;
+use EllisSystems\Payfast\Cashier;
 
 trait ManagesCustomer
 {
@@ -10,7 +10,7 @@ trait ManagesCustomer
      * Create a customer record for the billable model.
      *
      * @param  array  $attributes
-     * @return \Laravel\Paddle\Customer
+     * @return \EllisSystems\Payfast\Customer
      */
     public function createAsCustomer(array $attributes = [])
     {

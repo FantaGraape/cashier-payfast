@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use Carbon\Carbon;
-use Laravel\Paddle\Payment;
+use EllisSystems\Payfast\Payment;
 use PHPUnit\Framework\TestCase;
 
 class PaymentTest extends TestCase

@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use Laravel\Paddle\Subscription;
+use EllisSystems\Payfast\Subscription;
 use PHPUnit\Framework\TestCase;
 
 class SubscriptionTest extends TestCase

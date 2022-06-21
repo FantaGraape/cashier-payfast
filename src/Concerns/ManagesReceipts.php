@@ -1,8 +1,8 @@
 <?php
 
-namespace Laravel\Paddle\Concerns;
+namespace EllisSystems\Payfast\Concerns;
 
-use Laravel\Paddle\Cashier;
+use EllisSystems\Payfast\Cashier;
 
 trait ManagesReceipts
 {

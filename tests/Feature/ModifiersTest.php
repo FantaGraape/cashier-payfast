@@ -3,9 +3,9 @@
 namespace Tests\Feature;
 
 use Illuminate\Support\Facades\Http;
-use Laravel\Paddle\Cashier;
-use Laravel\Paddle\Modifier;
-use Laravel\Paddle\Subscription;
+use EllisSystems\Payfast\Cashier;
+use EllisSystems\Payfast\Modifier;
+use EllisSystems\Payfast\Subscription;
 use Money\Currency;
 
 class ModifiersTest extends FeatureTestCase
@@ -77,7 +77,7 @@ class ModifiersTest extends FeatureTestCase
             'quantity' => 1,
         ]);
 
-        /** @var \Laravel\Paddle\Modifier $modifier */
+        /** @var \EllisSystems\Payfast\Modifier $modifier */
         $modifier = $subscription->newModifier(15.00)
             ->description('Our test description')
             ->oneTime()

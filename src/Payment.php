@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Paddle;
+namespace EllisSystems\Payfast;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;

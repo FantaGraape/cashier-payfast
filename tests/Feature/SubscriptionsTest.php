@@ -3,8 +3,8 @@
 namespace Tests\Feature;
 
 use Carbon\Carbon;
-use Laravel\Paddle\Cashier;
-use Laravel\Paddle\Subscription;
+use EllisSystems\Payfast\Cashier;
+use EllisSystems\Payfast\Subscription;
 use LogicException;
 
 class SubscriptionsTest extends FeatureTestCase

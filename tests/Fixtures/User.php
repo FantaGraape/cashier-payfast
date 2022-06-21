@@ -3,7 +3,7 @@
 namespace Tests\Fixtures;
 
 use Illuminate\Foundation\Auth\User as Model;
-use Laravel\Paddle\Billable;
+use EllisSystems\Payfast\Billable;
 
 class User extends Model
 {

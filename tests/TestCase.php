@@ -2,7 +2,7 @@
 
 namespace Tests;
 
-use Laravel\Paddle\CashierServiceProvider;
+use EllisSystems\Payfast\CashierServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 abstract class TestCase extends OrchestraTestCase

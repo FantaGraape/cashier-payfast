@@ -173,7 +173,7 @@ trait ManagesSubscriptions
     public function onPlan($plan)
     {
         return ! is_null($this->subscriptions()
-            ->where('paddle_plan', $plan)
+            ->where('subscription_plan', $plan)
             ->get()
             ->first(function (Subscription $subscription) {
                 return $subscription->valid();

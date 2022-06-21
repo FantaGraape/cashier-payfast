@@ -20,8 +20,8 @@ trait Billable
      * @param  array  $options
      * @return array
      */
-    public function paddleOptions(array $options = [])
+    public function payfastOptions(array $options = [])
     {
-        return Cashier::paddleOptions($options);
+        return Cashier::payfastOptions($options);
     }
 }

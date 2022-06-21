@@ -3,7 +3,7 @@
 namespace EllisSystems\Payfast;
 
 use Illuminate\Support\Facades\Http;
-use EllisSystems\Payfast\Exceptions\PaddleException;
+use EllisSystems\Payfast\Exceptions\PayfastException;
 use Money\Currencies\ISOCurrencies;
 use Money\Currency;
 use Money\Formatter\IntlMoneyFormatter;
@@ -62,6 +62,15 @@ class Cashier
     public static $receiptModel = Receipt::class;
 
     /**
+     * The order model class name.
+     *
+     * @var string
+     */
+    public static $orderModel = Order::class;
+
+
+
+    /**
      * Get prices for a set of product ids.
      *
      * @param  array|int  $products
@@ -70,6 +79,7 @@ class Cashier
      */
     public static function productPrices($products, array $options = [])
     {
+        /* Check local DB for products and prices TO DO */
         $payload = array_merge($options, [
             'product_ids' => implode(',', (array) $products),
         ]);
@@ -82,7 +92,7 @@ class Cashier
     }
 
     /**
-     * Get the Paddle webhook url.
+     * Get the  webhook url.
      *
      * @return string
      */
@@ -140,37 +150,41 @@ class Cashier
     }
 
     /**
-     * Perform a Paddle API call.
+     * Perform a Payfast API call.
      *
      * @param  string  $method
      * @param  string  $uri
      * @param  array  $payload
      * @return \Illuminate\Http\Client\Response
      *
-     * @throws \EllisSystems\Payfast\Exceptions\PaddleException
+     * @throws \EllisSystems\Payfast\Exceptions\PayfastException
      */
     protected static function makeApiCall($method, $uri, array $payload = [])
     {
         $response = Http::$method($uri, $payload);
 
         if ($response['success'] === false) {
-            throw new PaddleException($response['error']['message'], $response['error']['code']);
+            throw new PayfastException($response['error']['message'], $response['error']['code']);
         }
 
         return $response;
     }
 
     /**
-     * Get the default Paddle API options.
+     * Get the default Payfast API options.
      *
      * @param  array  $options
      * @return array
      */
-    public static function paddleOptions(array $options = [])
+    public static function payfastOptions(array $options = [])
     {
         return array_merge([
-            'vendor_id' => (int) config('cashier.vendor_id'),
-            'vendor_auth_code' => config('cashier.vendor_auth_code'),
+            'merchant_id' => (int) config('cashier.merchant_id'),
+            'merchant_key' => config('cashier.merchant_key'),
+            'passphrase' => config('cashier.passphrase'),
+            'proxy' => config('cashier.proxy'),
+            'sandbox' => config('cashier.sandbox'),
+            'notify_url' => config('cashier.notify_url'),
         ], $options);
     }
 
@@ -282,6 +296,17 @@ class Cashier
     public static function useReceiptModel($receiptModel)
     {
         static::$receiptModel = $receiptModel;
+    }
+
+    /**
+     * Set the order model class name.
+     *
+     * @param  string  $orderModel
+     * @return void
+     */
+    public static function useOrderModel($orderModel)
+    {
+        static::$orderModel = $orderModel;
     }
 
     /**

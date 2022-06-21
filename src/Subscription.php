@@ -35,12 +35,16 @@ class Subscription extends Model
      * @var array
      */
     protected $casts = [
-        'paddle_id' => 'integer',
-        'paddle_plan' => 'integer',
+        'payfast_token' => 'string',
+        'frequency' => 'integer',
+        'subscription_plan' => 'integer',
+        'payment_method' => 'string',
         'quantity' => 'integer',
         'trial_ends_at' => 'datetime',
+        'next_cycle' => 'datetime',
         'paused_from' => 'datetime',
         'ends_at' => 'datetime',
+        'cancelled_at' => 'datetime',
     ];
 
     /**
@@ -67,7 +71,12 @@ class Subscription extends Model
      */
     public function receipts()
     {
-        return $this->hasMany(Cashier::$receiptModel, 'paddle_subscription_id', 'paddle_id')->orderByDesc('created_at');
+        return $this->hasMany(Cashier::$receiptModel, 'payfast_token', 'payfast_token')->orderByDesc('created_at');
+    }
+
+    public function order()
+    {
+        return $this->hasOne(Cashier::$orderModel);
     }
 
     /**
@@ -99,8 +108,8 @@ class Subscription extends Model
     public function active()
     {
         return (is_null($this->ends_at) || $this->onGracePeriod() || $this->onPausedGracePeriod()) &&
-            (! Cashier::$deactivatePastDue || $this->paddle_status !== self::STATUS_PAST_DUE) &&
-            $this->paddle_status !== self::STATUS_PAUSED;
+            (! Cashier::$deactivatePastDue || $this->payfast_status !== self::STATUS_PAST_DUE) &&
+            $this->payfast_status !== self::STATUS_PAUSED;
     }
 
     /**
@@ -119,10 +128,10 @@ class Subscription extends Model
                 ->orWhere(function ($query) {
                     $query->onPausedGracePeriod();
                 });
-        })->where('paddle_status', '!=', self::STATUS_PAUSED);
+        })->where('payfast_status', '!=', self::STATUS_PAUSED);
 
         if (Cashier::$deactivatePastDue) {
-            $query->where('paddle_status', '!=', self::STATUS_PAST_DUE);
+            $query->where('payfast_status', '!=', self::STATUS_PAST_DUE);
         }
     }
 
@@ -133,7 +142,7 @@ class Subscription extends Model
      */
     public function pastDue()
     {
-        return $this->paddle_status === self::STATUS_PAST_DUE;
+        return $this->payfast_status === self::STATUS_PAST_DUE;
     }
 
     /**
@@ -144,7 +153,7 @@ class Subscription extends Model
      */
     public function scopePastDue($query)
     {
-        $query->where('paddle_status', self::STATUS_PAST_DUE);
+        $query->where('payfast_status', self::STATUS_PAST_DUE);
     }
 
     /**
@@ -175,7 +184,7 @@ class Subscription extends Model
      */
     public function paused()
     {
-        return $this->paddle_status === self::STATUS_PAUSED;
+        return $this->payfast_status === self::STATUS_PAUSED;
     }
 
     /**
@@ -186,7 +195,7 @@ class Subscription extends Model
      */
     public function scopePaused($query)
     {
-        $query->where('paddle_status', self::STATUS_PAUSED);
+        $query->where('payfast_status', self::STATUS_PAUSED);
     }
 
     /**
@@ -197,7 +206,7 @@ class Subscription extends Model
      */
     public function scopeNotPaused($query)
     {
-        $query->where('paddle_status', '!=', self::STATUS_PAUSED);
+        $query->where('payfast_status', '!=', self::STATUS_PAUSED);
     }
 
     /**
@@ -512,7 +521,7 @@ class Subscription extends Model
         $info = $this->paddleInfo();
 
         $this->forceFill([
-            'paddle_status' => $info['state'],
+            'payfast_status' => $info['state'],
             'paused_from' => Carbon::createFromFormat('Y-m-d H:i:s', $info['paused_from'], 'UTC'),
         ])->save();
 
@@ -533,7 +542,7 @@ class Subscription extends Model
         ]);
 
         $this->forceFill([
-            'paddle_status' => self::STATUS_ACTIVE,
+            'payfast_status' => self::STATUS_ACTIVE,
             'ends_at' => null,
             'paused_from' => null,
         ])->save();
@@ -570,46 +579,6 @@ class Subscription extends Model
     public function updateUrl()
     {
         return $this->paddleInfo()['update_url'];
-    }
-
-    /**
-     * Begin creating a new modifier.
-     *
-     * @param  float  $amount
-     * @return \EllisSystems\Payfast\ModifierBuilder
-     */
-    public function newModifier($amount)
-    {
-        return new ModifierBuilder($this, $amount);
-    }
-
-    /**
-     * Get all of the modifiers for this subscription.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function modifiers()
-    {
-        $result = Cashier::post('/subscription/modifiers', array_merge([
-            'subscription_id' => $this->paddle_id,
-        ], $this->billable->paddleOptions()));
-
-        return collect($result['response'])->map(function (array $modifier) {
-            return new Modifier($this, $modifier);
-        });
-    }
-
-    /**
-     * Get a modifier instance by ID.
-     *
-     * @param  int  $id
-     * @return \EllisSystems\Payfast\Modifier|null
-     */
-    public function modifier($id)
-    {
-        return $this->modifiers()->first(function (Modifier $modifier) use ($id) {
-            return $modifier->id() === $id;
-        });
     }
 
     /**
@@ -661,7 +630,7 @@ class Subscription extends Model
         Cashier::post('/subscription/users_cancel', $payload);
 
         $this->forceFill([
-            'paddle_status' => self::STATUS_DELETED,
+            'payfast_status' => self::STATUS_DELETED,
             'ends_at' => $endsAt,
         ])->save();
 

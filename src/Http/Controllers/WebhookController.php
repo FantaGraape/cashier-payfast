@@ -16,7 +16,7 @@ use EllisSystems\Payfast\Events\SubscriptionUpdated;
 use EllisSystems\Payfast\Events\WebhookHandled;
 use EllisSystems\Payfast\Events\WebhookReceived;
 use EllisSystems\Payfast\Exceptions\InvalidPassthroughPayload;
-use EllisSystems\Payfast\Http\Middleware\VerifyWebhookSignature;
+use EllisSystems\Payfast\Http\Middleware\VerifyWebhookNotification;
 use EllisSystems\Payfast\Subscription;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -29,13 +29,11 @@ class WebhookController extends Controller
      */
     public function __construct()
     {
-        if (config('cashier.public_key')) {
-            $this->middleware(VerifyWebhookSignature::class);
-        }
+        $this->middleware(VerifyWebhookNotification::class);
     }
 
     /**
-     * Handle a Paddle webhook call.
+     * Handle a Payfast webhook call.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Symfony\Component\HttpFoundation\Response
@@ -44,11 +42,11 @@ class WebhookController extends Controller
     {
         $payload = $request->all();
 
-        if (! isset($payload['alert_name'])) {
+        if (!isset($payload['alert_name'])) {
             return new Response();
         }
 
-        $method = 'handle'.Str::studly($payload['alert_name']);
+        $method = 'handle' . Str::studly($payload['alert_name']);
 
         WebhookReceived::dispatch($payload);
 
@@ -153,7 +151,7 @@ class WebhookController extends Controller
     {
         $passthrough = json_decode($payload['passthrough'], true);
 
-        if (! is_array($passthrough) || ! isset($passthrough['subscription_name'])) {
+        if (!is_array($passthrough) || !isset($passthrough['subscription_name'])) {
             throw new InvalidPassthroughPayload;
         }
 
@@ -183,7 +181,7 @@ class WebhookController extends Controller
      */
     protected function handleSubscriptionUpdated(array $payload)
     {
-        if (! $subscription = $this->findSubscription($payload['subscription_id'])) {
+        if (!$subscription = $this->findSubscription($payload['subscription_id'])) {
             return;
         }
 
@@ -222,7 +220,7 @@ class WebhookController extends Controller
      */
     protected function handleSubscriptionCancelled(array $payload)
     {
-        if (! $subscription = $this->findSubscription($payload['subscription_id'])) {
+        if (!$subscription = $this->findSubscription($payload['subscription_id'])) {
             return;
         }
 
@@ -257,7 +255,7 @@ class WebhookController extends Controller
     {
         $passthrough = json_decode($passthrough, true);
 
-        if (! is_array($passthrough) || ! isset($passthrough['billable_id'], $passthrough['billable_type'])) {
+        if (!is_array($passthrough) || !isset($passthrough['billable_id'], $passthrough['billable_type'])) {
             throw new InvalidPassthroughPayload;
         }
 

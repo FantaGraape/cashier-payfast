@@ -34,6 +34,7 @@ trait ManagesCustomer
      * @param  array  $options
      * @return \Illuminate\Support\Collection
      */
+    /* PENDING REMOVAL */
     public function productPrices($products, array $options = [])
     {
         $options = array_merge([
@@ -44,11 +45,11 @@ trait ManagesCustomer
     }
 
     /**
-     * Get the billable model's email address to associate with Paddle.
+     * Get the billable model's email address to associate with Payfast.
      *
      * @return string|null
      */
-    public function paddleEmail()
+    public function payfastEmail()
     {
         return $this->email;
     }
@@ -62,7 +63,8 @@ trait ManagesCustomer
      *
      * @link https://developer.paddle.com/reference/platform-parameters/supported-countries
      */
-    public function paddleCountry()
+    /* PENDING REMOVAL */
+    public function payfastCountry()
     {
         //
     }
@@ -76,7 +78,8 @@ trait ManagesCustomer
      *
      * @link https://developer.paddle.com/reference/platform-parameters/supported-countries#countries-requiring-postcode
      */
-    public function paddlePostcode()
+    /* PENDING REMOVAL */
+    public function payfastPostcode()
     {
         //
     }

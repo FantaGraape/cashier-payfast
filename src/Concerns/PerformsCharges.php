@@ -6,6 +6,8 @@ use InvalidArgumentException;
 use EllisSystems\Payfast\Cashier;
 use LogicException;
 
+/* REQUIRES REWRITE TO PAYFAST LOGIC */
+
 trait PerformsCharges
 {
     /**

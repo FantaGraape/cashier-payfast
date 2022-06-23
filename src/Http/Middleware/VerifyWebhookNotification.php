@@ -38,7 +38,7 @@ class VerifyWebhookNotification
         $validPaymentData = $this->validatePaymentData($payload);
         $serverConfirmation = $this->getServerConfirmation($parameterString);
         if ($validSignature && $validPaymentData && $serverConfirmation) {
-            Log::debug('Baby we are cooking now');
+            Log::debug('VALID REQUEST - PROCEEDING');
             return $next($request);
         }
     }
@@ -81,12 +81,11 @@ class VerifyWebhookNotification
 
     private function validateSignature($payload, $parameterString)
     {
-
         if (!isset($payload['signature'])) {
             PayFastPayment::$errorMsg[] = "Invalid signature";
             return false;
         }
-        $payfastPassphrase = config('payfast.passphrase');
+        $payfastPassphrase = config('cashier.passphrase');
         //opinionated return, passphrase should always be set for security concerns
         if ($payfastPassphrase === null) {
             PayFastPayment::$errorMsg[] = "Invalid passphrase";
@@ -99,8 +98,9 @@ class VerifyWebhookNotification
             PayFastPayment::$errorMsg[] = "Invalid signature";
             return false;
         }
-
-        return ($payload['signature'] === $serverSideSignature);
+        $validSignature = ($payload['signature'] === $serverSideSignature);
+        Log::debug($validSignature ? 'VALID SIGNATURE' : 'INVALID SIGNATURE');
+        return $validSignature;
     }
 
     private function validatePaymentData($payload)
@@ -108,7 +108,9 @@ class VerifyWebhookNotification
         $cartTotal = 200; // TESTING
         //Check DB if unique payment ID exists
         //Check that payment cartTotal is within 0.01 of payload["amount_gross"]
-        return !(abs((float)$cartTotal - (float)$payload['amount_gross']) > 0.01);
+        $validPaymendData = !(abs((float)$cartTotal - (float)$payload['amount_gross']) > 0.01);
+        Log::debug($validPaymendData ? 'VALID PAYMENT DATA' : 'INVALID PAYMENT DATA');
+        return  $validPaymendData;
     }
 
     private function getServerConfirmation($parameterString)
@@ -141,9 +143,11 @@ class VerifyWebhookNotification
             $response = curl_exec($ch);
             curl_close($ch);
             if ($response === 'VALID') {
+                Log::debug('VALID SERVER CONFIRMATION');
                 return true;
             }
         }
+        Log::debug('INVALID SERVER CONFIRMATION');
         return false;
     }
     /*

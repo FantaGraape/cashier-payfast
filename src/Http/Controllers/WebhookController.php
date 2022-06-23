@@ -19,6 +19,7 @@ use EllisSystems\Payfast\Exceptions\InvalidPassthroughPayload;
 use EllisSystems\Payfast\Http\Middleware\VerifyWebhookNotification;
 use EllisSystems\Payfast\Subscription;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Log;
 
 class WebhookController extends Controller
 {
@@ -40,7 +41,9 @@ class WebhookController extends Controller
      */
     public function __invoke(Request $request)
     {
+        Log::info("Incoming Webhook from Payfast...");
         $payload = $request->all();
+        Log::debug($payload);
 
         if (!isset($payload['alert_name'])) {
             return new Response();

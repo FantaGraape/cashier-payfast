@@ -24,11 +24,10 @@ class CreateReceiptsTable extends Migration
             $table->string('amount_gross');
             $table->string('amount_fee');
             $table->string('amount_net');
+            $table->string('payfast_payment_id');
             $table->string('order_id')->unique();
-            $table->string('tax');
             $table->string('currency', 3);
             $table->integer('quantity');
-            $table->string('receipt_url')->unique();
             $table->timestamp('paid_at');
             $table->timestamps();
 

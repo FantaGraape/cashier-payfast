@@ -136,7 +136,7 @@ class CashierFake
      */
     public static function getFormattedVendorUrl(string $path): string
     {
-        return Cashier::vendorsUrl().'/api/2.0'.Str::start($path, '/');
+        return Cashier::apiUrl().Str::start($path, '/');
     }
 
     /**

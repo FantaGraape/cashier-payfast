@@ -53,10 +53,11 @@ class WebhookController extends Controller
 
         WebhookReceived::dispatch($payload);
 
-        if(isset($payload['token'])){
+        if (isset($payload['token'])) {
             //Check if this is a new subscription or an exsiting subscription
-
-
+            if ($subscription = $this->findSubscription($payload['token'])) {
+                //If Subscription exists then update
+            }
         }
 
         if (method_exists($this, $method)) {
@@ -110,25 +111,29 @@ class WebhookController extends Controller
      */
     protected function handleSubscriptionPaymentSucceeded(array $payload)
     {
-        if ($this->receiptExists($payload['order_id'])) {
+        if ($this->receiptExists($payload['m_payment_id'])) {
             return;
         }
 
-        if ($subscription = $this->findSubscription($payload['subscription_id'])) {
+        if ($subscription = $this->findSubscription($payload['token'])) {
             $billable = $subscription->billable;
         } else {
-            $billable = $this->findOrCreateCustomer($payload['passthrough']);
+            $billable = $this->findOrCreateCustomer($payload['custom_int1']);
         }
 
         $receipt = $billable->receipts()->create([
-            'paddle_subscription_id' => $payload['subscription_id'],
-            'checkout_id' => $payload['checkout_id'],
-            'order_id' => $payload['order_id'],
-            'amount' => $payload['sale_gross'],
-            'tax' => $payload['payment_tax'],
-            'currency' => $payload['currency'],
-            'quantity' => (int) $payload['quantity'],
-            'receipt_url' => $payload['receipt_url'],
+            'payfast_token' => $payload['token'],
+            'order_id' => $payload['m_payment_id'],
+            'amount_gross' => $payload['amount_gross'],
+            'amount_net' => $payload['amount_net'],
+            'amount_fee' => $payload['amount_fee'],
+            'item_name' => $payload['item_name'],
+            'item_description' => $payload['item_description'],
+            'payfast_payment_id' => $payload['pf_payment_id'],
+            //Payfast only supports ZAR for now so we will use the config value - FUTURE USE
+            'currency' =>config('cashier.currency'),
+            //Payfast doesnt natively support quantity - FUTURE USE
+            'quantity' => (int) 1,
             'paid_at' => Carbon::createFromFormat('Y-m-d H:i:s', $payload['event_time'], 'UTC'),
         ]);
 
@@ -196,12 +201,12 @@ class WebhookController extends Controller
 
         // Plan...
         if (isset($payload['subscription_plan_id'])) {
-            $subscription->paddle_plan = $payload['subscription_plan_id'];
+            $subscription->subscription_plan = $payload['subscription_plan_id'];
         }
 
         // Status...
         if (isset($payload['status'])) {
-            $subscription->paddle_status = $payload['status'];
+            $subscription->payfast_status = $payload['status'];
         }
 
         // Quantity...
@@ -227,9 +232,10 @@ class WebhookController extends Controller
      * @param  array  $payload
      * @return void
      */
+    /* NOT IMPLEMENTED */
     protected function handleSubscriptionCancelled(array $payload)
     {
-        if (!$subscription = $this->findSubscription($payload['subscription_id'])) {
+        if (!$subscription = $this->findSubscription($payload['token'])) {
             return;
         }
 
@@ -242,7 +248,7 @@ class WebhookController extends Controller
 
         // Status...
         if (isset($payload['status'])) {
-            $subscription->paddle_status = $payload['status'];
+            $subscription->payfast_status = $payload['status'];
         }
 
         $subscription->paused_from = null;

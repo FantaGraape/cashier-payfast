@@ -83,20 +83,11 @@ class Cashier
      *
      * @return string
      */
-    public static function vendorsUrl()
+    public static function apiUrl()
     {
-        return 'https://'.(config('cashier.sandbox') ? 'sandbox-' : '').'vendors.paddle.com';
+        return 'https://'.(config('cashier.sandbox') ? 'sandbox' : 'api').'.payfast.co.za';
     }
 
-    /**
-     * Get the Paddle checkout API url.
-     *
-     * @return string
-     */
-    public static function checkoutUrl()
-    {
-        return 'https://'.(config('cashier.sandbox') ? 'sandbox-' : '').'checkout.paddle.com';
-    }
 
     /**
      * Perform a GET Paddle API call.
@@ -109,7 +100,7 @@ class Cashier
      */
     public static function get($uri, array $payload = [])
     {
-        return static::makeApiCall('get', static::checkoutUrl().'/api/2.0'.$uri, $payload);
+        return static::makeApiCall('get', static::apiUrl().$uri, $payload);
     }
 
     /**
@@ -123,7 +114,7 @@ class Cashier
      */
     public static function post($uri, array $payload = [])
     {
-        return static::makeApiCall('post', static::vendorsUrl().'/api/2.0'.$uri, $payload);
+        return static::makeApiCall('post', static::apiUrl().$uri, $payload);
     }
 
     /**

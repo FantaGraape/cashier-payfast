@@ -16,7 +16,7 @@ class VerifyWebhookNotification
 {
     public function handle($request, Closure $next)
     {
-
+        Log::debug('starting...');
         if (!$this->validateReffererOrigin($request)) {
             return false;
         }
@@ -72,8 +72,10 @@ class VerifyWebhookNotification
         }
 
         if (in_array($reffererIpAddress, $validIps, true)) {
+            Log::debug('VALID REFER');
             return true;
         }
+        Log::debug('INVALID REFER');
         return false;
     }
 

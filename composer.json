@@ -9,12 +9,9 @@
     },
     "authors": [
         {
-            "name": "Taylor Otwell",
-            "email": "taylor@laravel.com"
-        },
-        {
-            "name": "Dries Vints",
-            "email": "dries@laravel.com"
+            "name": "Timothy Ellis",
+            "email": "timothy@ellis-systems.tech",
+            "role": "Developer"
         }
     ],
     "require": {
@@ -57,7 +54,10 @@
         "laravel": {
             "providers": [
                 "EllisSystems\\Payfast\\CashierServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "CashierPayfast": "EllisSystems\\PayFast\\Facades\\CashierPayFast"
+            }
         }
     },
     "config": {

@@ -66,7 +66,7 @@ class VerifyWebhookNotification
 
         $reffererIpAddress = $request->ip();
 
-        if (config('payfast.testmode')) {
+        if (config('cashier.sandbox')) {
             $localhost = array('127.0.0.1');
             $validIps = array_merge($validIps, $localhost);
         }
@@ -111,8 +111,8 @@ class VerifyWebhookNotification
 
     private function getServerConfirmation($parameterString)
     {
-        $payFastProxy = config('payfast.proxy');
-        $payFastHost = config('payfast.testmode') ? 'sandbox.payfast.co.za' : 'www.payfast.co.za';
+        $payFastProxy = config('cashier.proxy');
+        $payFastHost = config('cashier.sandbox') ? 'sandbox.payfast.co.za' : 'www.payfast.co.za';
         if (in_array('curl', get_loaded_extensions(), true)) {
             // Variable initialization
             $url = 'https://' . $payFastHost . '/eng/query/validate';

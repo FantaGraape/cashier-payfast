@@ -1,11 +1,11 @@
 {
-    "name": "laravel/cashier-paddle",
-    "description": "Cashier Paddle provides an expressive, fluent interface to Paddle's subscription billing services.",
-    "keywords": ["laravel", "paddle", "billing"],
+    "name": "laravel/cashier-payfast",
+    "description": "Cashier Payfast provides an expressive, fluent interface to Payfast's subscription billing services.",
+    "keywords": ["laravel", "payfast", "billing"],
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/laravel/cashier-paddle/issues",
-        "source": "https://github.com/laravel/cashier-paddle"
+        "issues": "https://github.com/laravel/cashier-payfast/issues",
+        "source": "https://github.com/laravel/cashier-payfast"
     },
     "authors": [
         {
@@ -45,7 +45,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Laravel\\Paddle\\": "src/"
+            "Laravel\\Payfast\\": "src/"
         }
     },
     "autoload-dev": {
@@ -59,7 +59,7 @@
         },
         "laravel": {
             "providers": [
-                "Laravel\\Paddle\\CashierServiceProvider"
+                "Laravel\\Payfast\\CashierServiceProvider"
             ]
         }
     },

@@ -1,7 +1,7 @@
 {
-    "name": "laravel/cashier-payfast",
+    "name": "ellissystems/cashier-payfast",
     "description": "Cashier Payfast provides an expressive, fluent interface to Payfast's subscription billing services.",
-    "keywords": ["laravel", "payfast", "billing"],
+    "keywords": ["EllisSystems", "payfast", "billing"],
     "license": "MIT",
     "support": {
         "issues": "https://github.com/laravel/cashier-payfast/issues",
@@ -45,7 +45,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Laravel\\Payfast\\": "src/"
+            "EllisSystems\\Payfast\\": "src/"
         }
     },
     "autoload-dev": {
@@ -54,12 +54,9 @@
         }
     },
     "extra": {
-        "branch-alias": {
-            "dev-master": "1.x-dev"
-        },
         "laravel": {
             "providers": [
-                "Laravel\\Payfast\\CashierServiceProvider"
+                "EllisSystems\\Payfast\\CashierServiceProvider"
             ]
         }
     },

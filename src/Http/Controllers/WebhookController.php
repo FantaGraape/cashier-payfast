@@ -45,13 +45,19 @@ class WebhookController extends Controller
         $payload = $request->all();
         Log::debug($payload);
 
-        if (!isset($payload['alert_name'])) {
+        if (!isset($payload['token'])) {
             return new Response();
         }
 
-        $method = 'handle' . Str::studly($payload['alert_name']);
+        /* $method = 'handle' . Str::studly($payload['alert_name']); */
 
         WebhookReceived::dispatch($payload);
+
+        if(isset($payload['token'])){
+            //Check if this is a new subscription or an exsiting subscription
+
+
+        }
 
         if (method_exists($this, $method)) {
             try {
@@ -269,14 +275,14 @@ class WebhookController extends Controller
     }
 
     /**
-     * Find the first subscription matching a Paddle subscription id.
+     * Find the first subscription matching a Payfast subscription token.
      *
      * @param  string  $subscriptionId
      * @return \EllisSystems\Payfast\Subscription|null
      */
-    protected function findSubscription(string $subscriptionId)
+    protected function findSubscription(string $payfastToken)
     {
-        return Cashier::$subscriptionModel::firstWhere('paddle_id', $subscriptionId);
+        return Cashier::$subscriptionModel::firstWhere('payfast_token', $payfastToken);
     }
 
     /**

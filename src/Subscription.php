@@ -22,6 +22,7 @@ class Subscription extends Model
     const STATUS_PAST_DUE = 'past_due';
     const STATUS_PAUSED = 'paused';
     const STATUS_DELETED = 'deleted';
+    const STATUS_PENDING_DELETE = 'pending_delete';
 
 
 
@@ -43,11 +44,15 @@ class Subscription extends Model
         'subscription_plan' => 'integer',
         'payment_method' => 'string',
         'quantity' => 'integer',
-        'trial_ends_at' => 'datetime',
-        'next_cycle' => 'datetime',
-        'paused_from' => 'datetime',
-        'ends_at' => 'datetime',
-        'cancelled_at' => 'datetime',
+        'trial_ends_at' => 'datetime:Y-m-d',
+        'next_cycle' => 'datetime:Y-m-d',
+        'paused_from' => 'datetime:Y-m-d',
+        'paused_to' => 'datetime:Y-m-d',
+        'ends_at' => 'datetime:Y-m-d',
+        'cancelled_at' => 'datetime:Y-m-d',
+        'created_at' => 'datetime:Y-m-d',
+        'updated_at' => 'datetime:Y-m-d',
+        'deleted_at' => 'datetime:Y-m-d h:i:s'
     ];
 
     /**
@@ -56,6 +61,18 @@ class Subscription extends Model
      * @var array
      */
     protected $payfastInfo;
+
+    public function api()
+    {
+        $api = new PayFastApi(
+            [
+                'merchantId' => config('cashier.merchant_id'),
+                'passPhrase' => config('cashier.passphrase'),
+                'testMode' => config('cashier.sandbox')
+            ]
+        );
+        return $api;
+    }
 
     /**
      * Get the billable model related to the subscription.
@@ -474,30 +491,25 @@ class Subscription extends Model
     }
 
     /**
-     * Pause the subscription.
-     *
+     * Pause the subscription to a specific date. Only supports Monthly frequency at the moment.
+     * @param  \DateTimeInterface  $pauseDate
      * @return $this
      */
-    public function pause()
+    public function pause($pauseDate)
     {
-        $api = new PayFastApi(
-            [
-                'merchantId' => config('cashier.merchant_id'),
-                'passPhrase' => config('cashier.passphrase'),
-                'testMode' => config('cashier.sandbox')
-            ]
-        );
-        //ADD REMAINING CYCLES AND THEN PAUSE FOR THAT AMOUNT - TODO
-        $api->subscriptions->pause($this->payfast_token, ['cycles' => 1]);
-        /* $this->updatePaddleSubscription([
-            'pause' => true,
-        ]); */
-
+        $cycles = $this->$this->payfastInfo()['cycles'];
+        $completedCycles = $this->$this->payfastInfo()['cycles_complete'];
+        $remainingCycles = $cycles - $completedCycles;
+        $pauseDate = Carbon::parse($pauseDate);
+        $now = Carbon::createFromFormat('Y-m-d', Carbon::now(), 'UTC')->addMonths($remainingCycles);
+        $cycleDifference = $now->diffInMonths($pauseDate);
+        $this->api->subscriptions->pause($this->payfast_token, ['cycles' => $cycleDifference]);
         $info = $this->payfastInfo();
 
         $this->forceFill([
-            'payfast_status' => $info['state'],
-            'paused_from' => Carbon::createFromFormat('Y-m-d H:i:s', $info['paused_from'], 'UTC'),
+            'payfast_status' => self::STATUS_PAUSED,
+            'paused_from' => Carbon::now(),
+            'paused_to' => Carbon::now()->addMonths($cycleDifference),
         ])->save();
 
         $this->payfastInfo = null;
@@ -512,17 +524,7 @@ class Subscription extends Model
      */
     public function unpause()
     {
-        $api = new PayFastApi(
-            [
-                'merchantId' => config('cashier.merchant_id'),
-                'passPhrase' => config('cashier.passphrase'),
-                'testMode' => config('cashier.sandbox')
-            ]
-        );
-        $api->subscriptions->unpause($this->payfast_token);
-        /* $this->updatePayfastSubscription([
-            'pause' => false,
-        ]); */
+        $this->api->subscriptions->unpause($this->payfast_token);
 
         $this->forceFill([
             'payfast_status' => self::STATUS_ACTIVE,
@@ -536,26 +538,15 @@ class Subscription extends Model
     }
 
     /**
-     * Update the underlying Paddle subscription information for the model.
+     * Update the underlying Payfast subscription information for the model.
      *
      * @param  array  $options
      * @return array
      */
     public function updatePayfastSubscription(array $options)
     {
-        $api = new PayFastApi(
-            [
-                'merchantId' => config('cashier.merchant_id'),
-                'passPhrase' => config('cashier.passphrase'),
-                'testMode' => config('cashier.sandbox')
-            ]
-        );
-        $response = $api->subscriptions->update($this->payfast_token, $options);
-        /* $payload = $this->billable->paddleOptions(array_merge([
-            'subscription_id' => $this->paddle_id,
-        ], $options)); */
 
-        /* $response = Cashier::post('/subscription/users/update', $payload)['response']; */
+        $response = $this->api->subscriptions->update($this->payfast_token, $options);
 
         $this->payfastInfo = null;
 
@@ -598,35 +589,46 @@ class Subscription extends Model
     }
 
     /**
-     * Cancel the subscription at a specific moment in time.
+     * Cancel the subscription at a specific moment in time. Currently only supports Monthly frequency changes
      *
      * @param  \DateTimeInterface  $endsAt
      * @return $this
      */
     public function cancelAt(DateTimeInterface $endsAt)
     {
-        $api = new PayFastApi(
-            [
-                'merchantId' => config('cashier.merchant_id'),
-                'passPhrase' => config('cashier.passphrase'),
-                'testMode' => config('cashier.sandbox')
-            ]
-        );
-        //Implement logic to calculate cycles update - for now set it to next month
-        /* $payload = $this->billable->payfastOptions([
-            'subscription_id' => $this->paddle_id,
-        ]);
-        Cashier::post('/subscription/users_cancel', $payload); */
-        $api->subscriptions->update($this->payfast_token, ['cycles' => 1]);
 
-        $this->forceFill([
-            'payfast_status' => self::STATUS_DELETED,
-            'ends_at' => $endsAt,
-        ])->save();
+        $cycles = $this->$this->payfastInfo()['cycles'];
+        $completedCycles = $this->$this->payfastInfo()['cycles_complete'];
+        $remainingCycles = $cycles - $completedCycles;
+        $endDate = Carbon::parse($endsAt);
+        $now = Carbon::createFromFormat('Y-m-d', Carbon::now(), 'UTC')->addMonths($remainingCycles);
 
-        $this->payfastInfo = null;
+        if ($endDate->isFuture()) {
+            $cycleDifference = $now->diffInMonths($endDate);
+            $updatedCycles = $cycleDifference - $cycles;
+            $this->api->subscriptions->update($this->payfast_token, ['cycles' => $updatedCycles]);
+            $this->forceFill([
+                'cancelled_at' => $now,
+                'payfast_status' => self::STATUS_PENDING_DELETE,
+                'ends_at' => Carbon::parse($this->payfastInfo()['run_date'])->addMonths($cycleDifference - 1),
+            ])->save();
 
-        return $this;
+            $this->payfastInfo = null;
+
+            return $this;
+        }
+        if ($endDate->equalTo($now)) {
+            $this->api->subscriptions->cancel($this->payfast_token);
+            $this->forceFill([
+                'cancelled_at' => $now,
+                'payfast_status' => self::STATUS_DELETED,
+                'ends_at' => Carbon::parse($this->payfastInfo()['run_date']),
+            ])->save();
+
+            $this->payfastInfo = null;
+
+            return $this;
+        }
     }
 
     /**
@@ -634,12 +636,11 @@ class Subscription extends Model
      *
      * @return \EllisSystems\Payfast\Payment
      */
-    //NOT IMPLEMENTED
     public function lastPayment()
     {
-        /* $payment = $this->paddleInfo()['last_payment'];
+        $payment = $this->payfastInfo()['last_cycle'];
 
-        return new Payment($payment['amount'], $payment['currency'], $payment['date']); */
+        return new Payment($payment['amount'], $payment['currency'], $payment['date']);
     }
 
     /**
@@ -668,6 +669,16 @@ class Subscription extends Model
         return (string) ($this->payfastInfo()['payment_method'] ?? '');
     }
 
+    /**
+     * Return the URL for updating card details associated with subscription
+     *
+     * @return string
+     */
+    public function updateCardURL()
+    {
+        return (string) ('https://' . (config('cashier.sandbox') ? 'www' : 'sandbox') . '.payfast.co.za/eng/' . ($this->payfast_token) . '?return=' . config('cashier.return_url'));
+    }
+
 
 
     /**
@@ -677,18 +688,12 @@ class Subscription extends Model
      */
     public function payfastInfo()
     {
-        $api = new PayFastApi(
-            [
-                'merchantId' => config('cashier.merchant_id'),
-                'passPhrase' => config('cashier.passphrase'),
-                'testMode' => config('cashier.sandbox')
-            ]
-        );
+
         if ($this->payfastInfo) {
             return $this->payfastInfo;
         }
 
-        return $this->payfastInfo = $api->subscriptions->fetch($this->payfast_token)['response'][0];
+        return $this->payfastInfo = $this->api->subscriptions->fetch($this->payfast_token);
     }
 
     /**

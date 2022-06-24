@@ -30,8 +30,10 @@ class CreateSubscriptionsTable extends Migration
             $table->string('payment_method')->nullable();
             $table->integer('quantity');
             $table->timestamp('trial_ends_at')->nullable();
+            $table->timestamp('last_cycle')->nullable();
             $table->timestamp('next_cycle')->nullable();
             $table->timestamp('paused_from')->nullable();
+            $table->timestamp('paused_to')->nullable();
             $table->timestamp('ends_at')->nullable();
             $table->timestamp('cancelled_at')->nullable();
             $table->timestamps();

@@ -68,7 +68,8 @@ return [
     |
     */
     'notify_url' => env('PAYFAST_NOTIFY_URL', 'https://4eea-102-165-226-14.sa.ngrok.io' . '/payfast/webhook'),
-        /* testing for removal */
+    'return_url' => env('PAYFAST_RETURN_URL', 'https://ellis-systems.tech/dashboard'),
+    /* testing for removal */
     'webhook' => env('CASHIER_WEBHOOK'),
 
     /*
@@ -97,6 +98,6 @@ return [
 
     'currency_locale' => env('CASHIER_CURRENCY_LOCALE', 'en'),
 
-    
+
 
 ];

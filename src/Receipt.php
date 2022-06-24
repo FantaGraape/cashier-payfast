@@ -21,7 +21,7 @@ class Receipt extends Model
      */
     protected $casts = [
         'quantity' => 'integer',
-        'paid_at' => 'datetime',
+        'paid_at' => 'datetime:Y-m-d',
     ];
 
     /**

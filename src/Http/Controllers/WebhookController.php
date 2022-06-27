@@ -177,7 +177,7 @@ class WebhookController extends Controller
             'subscription_plan' => $payload['custom_int2'],
             'last_cycle' => Carbon::now(),
             'next_cycle' => $payload['billing_date'],
-            'payfast_status' => $payload['payment_status'],
+            'payfast_status' => ($payload['payment_status'] == 'COMPLETE') ? 'active' : 'deleted',
             'quantity' => (int) 1,
             'trial_ends_at' => $trialEndsAt,
         ]);
@@ -203,9 +203,9 @@ class WebhookController extends Controller
         }
 
         // Status...
-        if (isset($payload['payment_status'])) {
+        /* if (isset($payload['payment_status'])) {
             $subscription->payfast_status = $payload['payment_status'];
-        }
+        } */
 
         // Quantity...
         if (isset($payload['new_quantity'])) {
@@ -246,7 +246,7 @@ class WebhookController extends Controller
 
         // Status...
         if (isset($payload['status'])) {
-            $subscription->payfast_status = $payload['status'];
+            $subscription->payfast_status = ($payload['payment_status'] == 'CANCELLED') ? 'deleted' : 'active' ;
         }
 
         $subscription->paused_from = null;

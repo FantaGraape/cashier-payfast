@@ -9,6 +9,7 @@ use Money\Currency;
 use Money\Formatter\IntlMoneyFormatter;
 use Money\Money;
 use NumberFormatter;
+use PayFast\PayFastPayment;
 
 class Cashier
 {
@@ -87,7 +88,36 @@ class Cashier
     {
         return 'https://'.(config('cashier.sandbox') ? 'sandbox' : 'api').'.payfast.co.za';
     }
+    public function payfastPaymentApi()
+    {
+        $api = new PayFastPayment(
+            [
+                'merchantId' => config('cashier.merchant_id'),
+                'merchantKey' => config('cashier.merchant_key'),
+                'passPhrase' => config('cashier.passphrase'),
+                'testMode' => config('cashier.sandbox')
+            ]
+        );
+        return $api;
+    }
+    /**
+     * Get the Paddle vendors API url.
+     * @param array $data
+     * @param int $orderId
+     * @return string
+     */
+    public static function generatePaymentIdentifier($data, $orderId){
+        $order_data = [
+            'm_payment_id' = $orderId
+        ];
+        $data = array_merge($data, $order_data)
+        return $this->payfastPaymentApi->onsite->generatePaymentIdentifier($data);
+    }
 
+    public static function generateOrder($data){
+
+        return $stuff
+    }
 
     /**
      * Perform a GET Paddle API call.

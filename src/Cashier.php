@@ -149,7 +149,6 @@ class Cashier
         return array_merge([
             'merchant_id' => (int) config('cashier.merchant_id'),
             'merchant_key' => config('cashier.merchant_key'),
-            'passphrase' => config('cashier.passphrase'),
             'proxy' => config('cashier.proxy'),
             'sandbox' => config('cashier.sandbox'),
             'notify_url' => config('cashier.notify_url'),

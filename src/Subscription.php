@@ -411,19 +411,13 @@ class Subscription extends Model
     public function charge($amount, $name)
     {
 
-        //NEED TO IMPLEMENT ADHOC CHARGE
-        if (strlen($name) > 50) {
-            throw new Exception('Charge name has a maximum length of 50 characters.');
+        if (strlen($name) > 100) {
+            throw new Exception('Item name has a maximum length of 100 characters.');
         }
 
-        $payload = $this->billable->paddleOptions([
-            'amount' => $amount,
-            'charge_name' => $name,
-        ]);
+        $this->payfastInfo = null;
 
-        $this->paddleInfo = null;
-
-        return Cashier::post("/subscription/{$this->paddle_id}/charge", $payload)['response'];
+        return $this->api->subscriptions->adhoc($this->payfast_token, ['amount' => $amount, 'item_name' => $name]);
     }
 
     /**
@@ -674,7 +668,7 @@ class Subscription extends Model
      *
      * @return string
      */
-    public function updateCardURL()
+    public function  updateUrl()
     {
         return (string) ('https://' . (config('cashier.sandbox') ? 'www' : 'sandbox') . '.payfast.co.za/eng/' . ($this->payfast_token) . '?return=' . config('cashier.return_url'));
     }

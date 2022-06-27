@@ -24,8 +24,8 @@ class CreateReceiptsTable extends Migration
             $table->string('amount_gross');
             $table->string('amount_fee');
             $table->string('amount_net');
-            $table->string('order_id')->unique();
-            $table->string('order_id')->unique();
+            $table->unsignedBigInteger('order_id')->unique();
+            $table->unsignedBigInteger('payfastPayment_id');
             $table->string('currency', 3);
             $table->integer('quantity');
             $table->timestamp('paid_at');

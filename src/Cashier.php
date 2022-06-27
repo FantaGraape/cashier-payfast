@@ -86,7 +86,7 @@ class Cashier
      */
     public static function apiUrl()
     {
-        return 'https://'.(config('cashier.sandbox') ? 'sandbox' : 'api').'.payfast.co.za';
+        return 'https://' . (config('cashier.sandbox') ? 'sandbox' : 'api') . '.payfast.co.za';
     }
     public function payfastPaymentApi()
     {
@@ -106,17 +106,38 @@ class Cashier
      * @param int $orderId
      * @return string
      */
-    public static function generatePaymentIdentifier($data, $orderId){
-        $order_data = [
-            'm_payment_id' = $orderId
-        ];
-        $data = array_merge($data, $order_data)
-        return $this->payfastPaymentApi->onsite->generatePaymentIdentifier($data);
+    protected function generatePaymentUUID($data, $orderId)
+    {
+        $props = array(
+            'name_first' => ,
+            'name_last' => ,
+            'email_address' => ,
+            'item_name' => ,
+            'custom_int1' => 'billabel_id'
+            'custom_str1' => 'billable_type',
+            
+            
+        )
+        $order_data = array('m_payment_id' =>  $orderId);
+        $reqData = array_merge($data, $order_data);
+        return $this->payfastPaymentApi->onsite->generatePaymentIdentifier($reqData);
     }
 
-    public static function generateOrder($data){
+    public function generateOrder($data, $requestIP, $billable_id, $billable_type)
+    {
+        $customer = Cashier::$customerModel::firstOrCreate([
+            'billable_id' => $billable_id,
+            'billable_type' => $billable_type,
+        ])->billable;
 
-        return $stuff
+        $order = $customer->orders()->create([
+            'billable_id' => $billable_id,
+            'billable_type' => $billable_type,
+            'checkout_total' => $data['amount'],
+            'ip_address' => $requestIP,
+        ]);
+
+        return $this->generatePaymentUUID($data, $order->id);
     }
 
     /**
@@ -130,7 +151,7 @@ class Cashier
      */
     public static function get($uri, array $payload = [])
     {
-        return static::makeApiCall('get', static::apiUrl().$uri, $payload);
+        return static::makeApiCall('get', static::apiUrl() . $uri, $payload);
     }
 
     /**
@@ -144,7 +165,7 @@ class Cashier
      */
     public static function post($uri, array $payload = [])
     {
-        return static::makeApiCall('post', static::apiUrl().$uri, $payload);
+        return static::makeApiCall('post', static::apiUrl() . $uri, $payload);
     }
 
     /**

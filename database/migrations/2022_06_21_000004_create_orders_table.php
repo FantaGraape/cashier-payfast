@@ -17,7 +17,6 @@ class CreateOrdersTable extends Migration
             $table->id();
             $table->unsignedBigInteger('billable_id');
             $table->string('billable_type');
-            $table->integer('subscription_plan');
             $table->string('checkout_total');
             $table->string('ip_address');
             $table->timestamps();

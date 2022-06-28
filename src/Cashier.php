@@ -108,19 +108,18 @@ class Cashier
      */
     protected function generatePaymentUUID($data, $orderId)
     {
+        //order the array
         $props = array(
-            'name_first' => ,
-            'name_last' => ,
-            'email_address' => ,
-            'item_name' => ,
-            'custom_int1' => 'billabel_id'
-            'custom_str1' => 'billable_type',
-            
-            
-        )
-        $order_data = array('m_payment_id' =>  $orderId);
-        $reqData = array_merge($data, $order_data);
-        return $this->payfastPaymentApi->onsite->generatePaymentIdentifier($reqData);
+            'm_payment_id' => $orderId,
+            'notify_url' => config('cashier.notify_url'),
+            'name_first' => $data['name_first'],
+            'name_last' => $data['name_last'],
+            'email_address' => $data['email_address'],
+            'item_name' => $data['item_name'],
+            'custom_int1' => $data['billabel_id'],
+            'custom_str1' => $data['billable_type'],
+        );
+        return $this->payfastPaymentApi->onsite->generatePaymentIdentifier($props);
     }
 
     public function generateOrder($data, $requestIP, $billable_id, $billable_type)
@@ -137,7 +136,10 @@ class Cashier
             'ip_address' => $requestIP,
         ]);
 
-        return $this->generatePaymentUUID($data, $order->id);
+
+        $uuid = $this->generatePaymentUUID($data, $order->id);
+
+        return $uuid;
     }
 
     /**

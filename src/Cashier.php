@@ -100,29 +100,9 @@ class Cashier
         );
         return $api;
     }
-    /**
-     * Get the Paddle vendors API url.
-     * @param array $data
-     * @param int $orderId
-     * @return string
-     */
-    protected function generatePaymentUUID($data, $orderId)
-    {
-        //order the array
-        $props = array(
-            'm_payment_id' => $orderId,
-            'notify_url' => config('cashier.notify_url'),
-            'name_first' => $data['name_first'],
-            'name_last' => $data['name_last'],
-            'email_address' => $data['email_address'],
-            'item_name' => $data['item_name'],
-            'custom_int1' => $data['billabel_id'],
-            'custom_str1' => $data['billable_type'],
-        );
-        return $this->payfastPaymentApi->onsite->generatePaymentIdentifier($props);
-    }
 
-    public function generateOrder($data, $requestIP, $billable_id, $billable_type)
+
+    public function generateOrder($amount, $requestIP, $billable_id, $billable_type)
     {
         $customer = Cashier::$customerModel::firstOrCreate([
             'billable_id' => $billable_id,
@@ -132,13 +112,21 @@ class Cashier
         $order = $customer->orders()->create([
             'billable_id' => $billable_id,
             'billable_type' => $billable_type,
-            'checkout_total' => $data['amount'],
+            'checkout_total' => $amount,
             'ip_address' => $requestIP,
         ]);
 
-
-        $uuid = $this->generatePaymentUUID($data, $order->id);
-
+        $props = array(
+            'm_payment_id' => $order->id,
+            'notify_url' => config('cashier.notify_url'),
+            'name_first' => $customer->last_name,
+            'name_last' => $customer->first_name,
+            'email_address' => $customer->email,
+            'item_name' => $order->id,
+            'custom_int1' => $billable_id,
+            'custom_str1' => $billable_type,
+        );
+        $uuid = $this->payfastPaymentApi->onsite->generatePaymentIdentifier($props);
         return $uuid;
     }
 

@@ -44,40 +44,33 @@ trait ManagesCustomer
     }
 
     /**
-     * Get the billable model's email address to associate with Paddle.
+     * Get the billable model's email address to associate with Payfast.
      *
      * @return string|null
      */
-    public function paddleEmail()
+    public function email()
     {
         return $this->email;
     }
 
     /**
-     * Get the billable model's country to associate with Paddle.
-     *
-     * This needs to be a 2 letter code. See the link below for supported countries.
+     * Get the billable model's last name to associate with Payfast.
      *
      * @return string|null
-     *
-     * @link https://developer.paddle.com/reference/platform-parameters/supported-countries
      */
-    public function paddleCountry()
+    public function lastName()
     {
-        //
+        return $this->lastName;
     }
 
     /**
-     * Get the billable model's postcode to associate with Paddle.
-     *
-     * See the link below for countries which require this.
+     * Get the billable model's first name to associate with Payfast.
      *
      * @return string|null
-     *
-     * @link https://developer.paddle.com/reference/platform-parameters/supported-countries#countries-requiring-postcode
      */
-    public function paddlePostcode()
+    public function firstName()
     {
-        //
+        return $this->firstName;
     }
+
 }

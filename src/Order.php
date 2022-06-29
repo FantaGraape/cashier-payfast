@@ -1,16 +1,16 @@
 <?php
 
-namespace Laravel\Paddle;
+namespace EllisSystems\Payfast;
 
 use Carbon\Carbon;
 use DateTimeInterface;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Paddle\Concerns\Prorates;
+use EllisSystems\Payfast\Concerns\Prorates;
 use LogicException;
 
 /**
- * @property \Laravel\Paddle\Billable $billable
+ * @property \EllisSystems\Payfast\Billable $billable
  */
 class Order extends Model
 {

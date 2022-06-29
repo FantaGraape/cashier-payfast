@@ -1,17 +1,17 @@
 <?php
 
-namespace Laravel\Paddle;
+namespace EllisSystems\Payfast;
 
 use Carbon\Carbon;
 use DateTimeInterface;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Paddle\Concerns\Prorates;
+use EllisSystems\Payfast\Concerns\Prorates;
 use LogicException;
-use Laravel\Paddle\Cashier;
+use EllisSystems\Payfast\Cashier;
 
 /**
- * @property \Laravel\Paddle\Billable $billable
+ * @property \EllisSystems\Payfast\Billable $billable
  */
 class Subscription extends Model
 {
@@ -568,7 +568,7 @@ class Subscription extends Model
      * Begin creating a new modifier.
      *
      * @param  float  $amount
-     * @return \Laravel\Paddle\ModifierBuilder
+     * @return \EllisSystems\Payfast\ModifierBuilder
      */
     public function newModifier($amount)
     {
@@ -595,7 +595,7 @@ class Subscription extends Model
      * Get a modifier instance by ID.
      *
      * @param  int  $id
-     * @return \Laravel\Paddle\Modifier|null
+     * @return \EllisSystems\Payfast\Modifier|null
      */
     public function modifier($id)
     {

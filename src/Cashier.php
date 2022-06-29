@@ -1,9 +1,9 @@
 <?php
 
-namespace Laravel\Paddle;
+namespace EllisSystems\Payfast;
 
 use Illuminate\Support\Facades\Http;
-use Laravel\Paddle\Exceptions\PaddleException;
+use EllisSystems\Payfast\Exceptions\PaddleException;
 use Money\Currencies\ISOCurrencies;
 use Money\Currency;
 use Money\Formatter\IntlMoneyFormatter;
@@ -127,7 +127,7 @@ class Cashier
      * @param  array  $payload
      * @return \Illuminate\Http\Client\Response
      *
-     * @throws \Laravel\Paddle\Exceptions\PaddleException
+     * @throws \EllisSystems\Payfast\Exceptions\PaddleException
      */
     public static function get($uri, array $payload = [])
     {
@@ -141,7 +141,7 @@ class Cashier
      * @param  array  $payload
      * @return \Illuminate\Http\Client\Response
      *
-     * @throws \Laravel\Paddle\Exceptions\PaddleException
+     * @throws \EllisSystems\Payfast\Exceptions\PaddleException
      */
     public static function post($uri, array $payload = [])
     {
@@ -156,7 +156,7 @@ class Cashier
      * @param  array  $payload
      * @return \Illuminate\Http\Client\Response
      *
-     * @throws \Laravel\Paddle\Exceptions\PaddleException
+     * @throws \EllisSystems\Payfast\Exceptions\PaddleException
      */
     protected static function makeApiCall($method, $uri, array $payload = [])
     {
@@ -331,7 +331,7 @@ class Cashier
     /**
      * Create a fake Cashier instance.
      *
-     * @return \Laravel\Paddle\CashierFake
+     * @return \EllisSystems\Payfast\CashierFake
      */
     public static function fake(...$arguments)
     {

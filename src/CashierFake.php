@@ -1,17 +1,17 @@
 <?php
 
-namespace Laravel\Paddle;
+namespace EllisSystems\Payfast;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use Laravel\Paddle\Events\PaymentSucceeded;
-use Laravel\Paddle\Events\SubscriptionCancelled;
-use Laravel\Paddle\Events\SubscriptionCreated;
-use Laravel\Paddle\Events\SubscriptionPaymentFailed;
-use Laravel\Paddle\Events\SubscriptionPaymentSucceeded;
-use Laravel\Paddle\Events\SubscriptionUpdated;
+use EllisSystems\Payfast\Events\PaymentSucceeded;
+use EllisSystems\Payfast\Events\SubscriptionCancelled;
+use EllisSystems\Payfast\Events\SubscriptionCreated;
+use EllisSystems\Payfast\Events\SubscriptionPaymentFailed;
+use EllisSystems\Payfast\Events\SubscriptionPaymentSucceeded;
+use EllisSystems\Payfast\Events\SubscriptionUpdated;
 
 class CashierFake
 {

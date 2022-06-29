@@ -1,11 +1,11 @@
 <?php
 
-namespace Laravel\Paddle;
+namespace EllisSystems\Payfast;
 
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property \Laravel\Paddle\Billable $billable
+ * @property \EllisSystems\Payfast\Billable $billable
  */
 class Customer extends Model
 {

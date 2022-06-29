@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Paddle;
+namespace EllisSystems\Payfast;
 
 use InvalidArgumentException;
 
@@ -9,7 +9,7 @@ class ModifierBuilder
     /**
      * The Subscription model the modifier belongs to.
      *
-     * @var \Laravel\Paddle\Subscription
+     * @var \EllisSystems\Payfast\Subscription
      */
     protected $subscription;
 
@@ -37,7 +37,7 @@ class ModifierBuilder
     /**
      * Create a new modifier builder instance.
      *
-     * @param  \Laravel\Paddle\Subscription  $subscription
+     * @param  \EllisSystems\Payfast\Subscription  $subscription
      * @param  float  $amount
      * @return void
      */
@@ -75,7 +75,7 @@ class ModifierBuilder
     /**
      * Create the modifier.
      *
-     * @return \Laravel\Paddle\Modifier
+     * @return \EllisSystems\Payfast\Modifier
      *
      * @throws \InvalidArgumentException
      */

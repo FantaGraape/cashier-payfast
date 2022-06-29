@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Paddle;
+namespace EllisSystems\Payfast;
 
 use Money\Currency;
 
@@ -9,7 +9,7 @@ class Modifier
     /**
      * The Subscription model the modifier belongs to.
      *
-     * @var \Laravel\Paddle\Subscription
+     * @var \EllisSystems\Payfast\Subscription
      */
     protected $subscription;
 
@@ -23,7 +23,7 @@ class Modifier
     /**
      * Create a new modifier instance.
      *
-     * @param  \Laravel\Paddle\Subscription  $subscription
+     * @param  \EllisSystems\Payfast\Subscription  $subscription
      * @param  array  $modifier
      * @return void
      */
@@ -46,7 +46,7 @@ class Modifier
     /**
      * Get the related subscription.
      *
-     * @return \Laravel\Paddle\Subscription
+     * @return \EllisSystems\Payfast\Subscription
      */
     public function subscription()
     {

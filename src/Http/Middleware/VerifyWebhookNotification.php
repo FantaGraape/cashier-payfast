@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Paddle\Http\Middleware;
+namespace EllisSystems\Payfast\Http\Middleware;
 
 use Closure;
 use PayFast\PayFastApi;
@@ -8,7 +8,7 @@ use PayFast\PayFastPayment;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Illuminate\Support\Facades\Log;
-use Laravel\Paddle\Cashier;
+use EllisSystems\Payfast\Cashier;
 
 /**
  * @see https://developers.payfast.co.za/docs#step_4_confirm_payment

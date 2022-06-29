@@ -1,10 +1,10 @@
 <?php
 
-namespace Laravel\Paddle\Concerns;
+namespace EllisSystems\Payfast\Concerns;
 
-use Laravel\Paddle\Cashier;
-use Laravel\Paddle\Order;
-use Laravel\Paddle\OrderBuilder;
+use EllisSystems\Payfast\Cashier;
+use EllisSystems\Payfast\Order;
+use EllisSystems\Payfast\OrderBuilder;
 
 trait ManagesOrders
 {
@@ -13,7 +13,7 @@ trait ManagesOrders
      *
      * @param  string  $name
      * @param  int  $plan
-     * @return \Laravel\Paddle\OrderBuilder;
+     * @return \EllisSystems\Payfast\OrderBuilder;
      */
     public function newOrder($amount, $requestIp)
     {
@@ -34,7 +34,7 @@ trait ManagesOrders
      * Get an order instance by id.
      *
      * @param  string  $name
-     * @return \Laravel\Paddle\Order|null
+     * @return \EllisSystems\Payfast\Order|null
      */
     public function order($id)
     {

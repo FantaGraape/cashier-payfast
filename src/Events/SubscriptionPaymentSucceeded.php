@@ -1,11 +1,11 @@
 <?php
 
-namespace Laravel\Paddle\Events;
+namespace EllisSystems\Payfast\Events;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Laravel\Paddle\Receipt;
+use EllisSystems\Payfast\Receipt;
 
 class SubscriptionPaymentSucceeded
 {
@@ -21,7 +21,7 @@ class SubscriptionPaymentSucceeded
     /**
      * The receipt instance.
      *
-     * @var \Laravel\Paddle\Receipt
+     * @var \EllisSystems\Payfast\Receipt
      */
     public $receipt;
 
@@ -36,7 +36,7 @@ class SubscriptionPaymentSucceeded
      * Create a new event instance.
      *
      * @param  \Illuminate\Database\Eloquent\Model  $billable
-     * @param  \Laravel\Paddle\Receipt  $receipt
+     * @param  \EllisSystems\Payfast\Receipt  $receipt
      * @param  array  $payload
      * @return void
      */

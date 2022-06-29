@@ -1,9 +1,9 @@
 <?php
 
-namespace Laravel\Paddle\Concerns;
+namespace EllisSystems\Payfast\Concerns;
 
 use InvalidArgumentException;
-use Laravel\Paddle\Cashier;
+use EllisSystems\Payfast\Cashier;
 use LogicException;
 
 trait PerformsCharges

@@ -1,6 +1,6 @@
 <?php
 
-namespace Laravel\Paddle\Exceptions;
+namespace EllisSystems\Payfast\Exceptions;
 
 use Exception;
 

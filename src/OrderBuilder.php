@@ -1,16 +1,16 @@
 <?php
 
-namespace Laravel\Paddle;
+namespace EllisSystems\Payfast;
 
 use Spatie\Url\Url;
-use Laravel\Paddle\Cashier;
+use EllisSystems\Payfast\Cashier;
 
 class OrderBuilder
 {
     /**
      * The Billable model that is ordering.
      *
-     * @var \Laravel\Paddle\Billable
+     * @var \EllisSystems\Payfast\Billable
      */
     protected $billable;
 
@@ -66,7 +66,7 @@ class OrderBuilder
     /**
      * Create a new order builder instance.
      *
-     * @param  \Laravel\Paddle\Billable  $billable
+     * @param  \EllisSystems\Payfast\Billable  $billable
      * @param  string  $amount
      * @param  string  $requestIp
      * @return void

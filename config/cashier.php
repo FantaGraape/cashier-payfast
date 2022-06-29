@@ -1,6 +1,49 @@
 <?php
 
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Payfast Merchant ID
+    |--------------------------------------------------------------------------
+    |
+    | This can be found either from the Payfast Sandbox or the Merchant settings in your 
+    | Payfast Portal.
+    |
+    */
+    'merchant_id' => env('PAYFAST_MERCHANT_ID', '10026426'),
+    /*
+    |--------------------------------------------------------------------------
+    | Payfast Merchant KEY
+    |--------------------------------------------------------------------------
+    |
+    | This can be found either from the Payfast Sandbox or the Merchant settings in your 
+    | Payfast Portal.
+    |
+    */
+    'merchant_key' => env('PAYFAST_MERCHANT_KEY', 'nkoq82zstric8'),
+    /*
+    |--------------------------------------------------------------------------
+    | Payfast Passphrase
+    |--------------------------------------------------------------------------
+    |
+    | This must be used for working with subscriptions for payfast
+    | This can be found either from the Payfast Sandbox or the Merchant settings in your 
+    | Payfast Portal.
+    |
+    */
+    'passphrase' => env('PAYFAST_PASSPHRASE', 'PfN9Xxxh5TUK4xwFs'),
+    'proxy' => env('PAYFAST_PROXY'),
+    /*
+    |--------------------------------------------------------------------------
+    | Payfast Sandbox
+    |--------------------------------------------------------------------------
+    |
+    | This option allows you to toggle between the Payfast live environment
+    | and its sandboxed environment. This feature is available publicly.
+    |
+    */
+
+    'sandbox' => env('PAYFAST_TESTMODE', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -30,19 +73,20 @@ return [
     |
     */
 
-    'path' => env('CASHIER_PATH', 'paddle'),
+    'path' => env('CASHIER_PATH', 'payfast'),
 
     /*
     |--------------------------------------------------------------------------
     | Cashier Webhook
     |--------------------------------------------------------------------------
     |
-    | This is the base URI where webhooks from Paddle will be sent. The URL
-    | built into Cashier Paddle is used by default; however, you can add
+    | This is the base URI where webhooks from Payfast will be sent. The URL
+    | built into Cashier Payfast is used by default; however, you can add
     | a custom URL when required for any application testing purposes.
     |
     */
-
+    'notify_url' => env('PAYFAST_NOTIFY_URL', 'https://9a28-102-165-226-14.sa.ngrok.io' . '/payfast/webhook'),
+    'return_url' => env('PAYFAST_RETURN_URL', 'https://ellis-systems.tech/dashboard'),
     'webhook' => env('CASHIER_WEBHOOK'),
 
     /*
@@ -56,7 +100,7 @@ return [
     |
     */
 
-    'currency' => env('CASHIER_CURRENCY', 'USD'),
+    'currency' => env('CASHIER_CURRENCY', 'ZAR'),
 
     /*
     |--------------------------------------------------------------------------
@@ -70,18 +114,5 @@ return [
     */
 
     'currency_locale' => env('CASHIER_CURRENCY_LOCALE', 'en'),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Paddle Sandbox
-    |--------------------------------------------------------------------------
-    |
-    | This option allows you to toggle between the Paddle live environment
-    | and its sandboxed environment. This feature is only available for
-    | a select group of vendors and not a publicly available feature.
-    |
-    */
-
-    'sandbox' => env('PADDLE_SANDBOX', false),
 
 ];

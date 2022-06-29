@@ -29,11 +29,8 @@ class CashierServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->bootRoutes();
-        $this->bootResources();
         $this->bootMigrations();
         $this->bootPublishing();
-        $this->bootDirectives();
-        $this->bootComponents();
     }
 
     /**
@@ -52,16 +49,6 @@ class CashierServiceProvider extends ServiceProvider
                 $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
             });
         }
-    }
-
-    /**
-     * Boot the package resources.
-     *
-     * @return void
-     */
-    protected function bootResources()
-    {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'cashier');
     }
 
     /**
@@ -91,33 +78,8 @@ class CashierServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../database/migrations' => $this->app->databasePath('migrations'),
             ], 'cashier-migrations');
-
-            $this->publishes([
-                __DIR__.'/../resources/views' => $this->app->resourcePath('views/vendor/cashier'),
-            ], 'cashier-views');
         }
     }
 
-    /**
-     * Boot the package directives.
-     *
-     * @return void
-     */
-    protected function bootDirectives()
-    {
-        Blade::directive('paddleJS', function () {
-            return "<?php echo view('cashier::js'); ?>";
-        });
-    }
-
-    /**
-     * Boot the package components.
-     *
-     * @return void
-     */
-    protected function bootComponents()
-    {
-        Blade::component('cashier::components.button', 'paddle-button');
-        Blade::component(Checkout::class, 'paddle-checkout');
-    }
+    
 }

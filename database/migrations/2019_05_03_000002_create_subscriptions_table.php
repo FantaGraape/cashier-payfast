@@ -25,7 +25,7 @@ class CreateSubscriptionsTable extends Migration
              /* Billing Cycle (3)Monthly, (4)Quarterly, (5)BiAnnually, (6)Annually */
              $table->integer('frequency');
             /* $table->integer('paddle_plan'); */
-            $table->integer('subscription_plan');
+            /* $table->integer('subscription_plan'); */
             $table->string('payment_method')->nullable();
             $table->integer('quantity');
             $table->timestamp('trial_ends_at')->nullable();

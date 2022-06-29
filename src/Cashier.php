@@ -1,15 +1,15 @@
 <?php
 
-namespace EllisSystems\Payfast;
+namespace Laravel\Paddle;
 
 use Illuminate\Support\Facades\Http;
-use EllisSystems\Payfast\Exceptions\PayfastException;
+use Laravel\Paddle\Exceptions\PaddleException;
 use Money\Currencies\ISOCurrencies;
 use Money\Currency;
 use Money\Formatter\IntlMoneyFormatter;
 use Money\Money;
 use NumberFormatter;
-
+use PayFast\PayFastPayment;
 
 class Cashier
 {
@@ -70,7 +70,27 @@ class Cashier
     public static $orderModel = Order::class;
 
     /**
-     * Get the  webhook url.
+     * Get prices for a set of product ids.
+     *
+     * @param  array|int  $products
+     * @param  array  $options
+     * @return \Illuminate\Support\Collection
+     */
+    public static function productPrices($products, array $options = [])
+    {
+        $payload = array_merge($options, [
+            'product_ids' => implode(',', (array) $products),
+        ]);
+
+        $response = static::get('/prices', $payload)['response'];
+
+        return collect($response['products'])->map(function (array $product) use ($response) {
+            return new ProductPrice($response['customer_country'], $product);
+        });
+    }
+
+    /**
+     * Get the Paddle webhook url.
      *
      * @return string
      */
@@ -84,9 +104,19 @@ class Cashier
      *
      * @return string
      */
-    public static function apiUrl()
+    public static function vendorsUrl()
     {
-        return 'https://' . (config('cashier.sandbox') ? 'sandbox' : 'api') . '.payfast.co.za';
+        return 'https://'.(config('cashier.sandbox') ? 'sandbox-' : '').'vendors.paddle.com';
+    }
+
+    /**
+     * Get the Paddle checkout API url.
+     *
+     * @return string
+     */
+    public static function checkoutUrl()
+    {
+        return 'https://'.(config('cashier.sandbox') ? 'sandbox-' : '').'checkout.paddle.com';
     }
 
     /**
@@ -96,11 +126,11 @@ class Cashier
      * @param  array  $payload
      * @return \Illuminate\Http\Client\Response
      *
-     * @throws \EllisSystems\Payfast\Exceptions\PaddleException
+     * @throws \Laravel\Paddle\Exceptions\PaddleException
      */
     public static function get($uri, array $payload = [])
     {
-        return static::makeApiCall('get', static::apiUrl() . $uri, $payload);
+        return static::makeApiCall('get', static::checkoutUrl().'/api/2.0'.$uri, $payload);
     }
 
     /**
@@ -110,48 +140,59 @@ class Cashier
      * @param  array  $payload
      * @return \Illuminate\Http\Client\Response
      *
-     * @throws \EllisSystems\Payfast\Exceptions\PaddleException
+     * @throws \Laravel\Paddle\Exceptions\PaddleException
      */
     public static function post($uri, array $payload = [])
     {
-        return static::makeApiCall('post', static::apiUrl() . $uri, $payload);
+        return static::makeApiCall('post', static::vendorsUrl().'/api/2.0'.$uri, $payload);
     }
 
     /**
-     * Perform a Payfast API call.
+     * Perform a Paddle API call.
      *
      * @param  string  $method
      * @param  string  $uri
      * @param  array  $payload
      * @return \Illuminate\Http\Client\Response
      *
-     * @throws \EllisSystems\Payfast\Exceptions\PayfastException
+     * @throws \Laravel\Paddle\Exceptions\PaddleException
      */
     protected static function makeApiCall($method, $uri, array $payload = [])
     {
         $response = Http::$method($uri, $payload);
 
         if ($response['success'] === false) {
-            throw new PayfastException($response['error']['message'], $response['error']['code']);
+            throw new PaddleException($response['error']['message'], $response['error']['code']);
         }
 
         return $response;
     }
 
+    public static function payfastPaymentApi()
+    {
+        $api = new PayFastPayment(
+            [
+                'merchantId' => config('cashier.merchant_id'),
+                'merchantKey' => config('cashier.merchant_key'),
+                'passPhrase' => config('cashier.passphrase'),
+                'testMode' => config('cashier.sandbox')
+            ]
+        );
+        return $api;
+    }
+
+
     /**
-     * Get the default Payfast API options.
+     * Get the default Paddle API options.
      *
      * @param  array  $options
      * @return array
      */
-    public static function payfastOptions(array $options = [])
+    public static function paddleOptions(array $options = [])
     {
         return array_merge([
-            'merchant_id' => (int) config('cashier.merchant_id'),
-            'merchant_key' => config('cashier.merchant_key'),
-            'proxy' => config('cashier.proxy'),
-            'sandbox' => config('cashier.sandbox'),
-            'notify_url' => config('cashier.notify_url'),
+            'vendor_id' => (int) config('cashier.vendor_id'),
+            'vendor_auth_code' => config('cashier.vendor_auth_code'),
         ], $options);
     }
 
@@ -279,7 +320,7 @@ class Cashier
     /**
      * Create a fake Cashier instance.
      *
-     * @return \EllisSystems\Payfast\CashierFake
+     * @return \Laravel\Paddle\CashierFake
      */
     public static function fake(...$arguments)
     {

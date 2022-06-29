@@ -17,15 +17,16 @@ class CreateReceiptsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('billable_id');
             $table->string('billable_type');
-            /* $table->unsignedBigInteger('paddle_subscription_id')->nullable()->index(); Replaced by ... */
-            $table->string('payfast_token')->nullable()->index();
+            /* $table->unsignedBigInteger('paddle_subscription_id')->nullable()->index(); */
+            $table->unsignedBigInteger('payfast_token')->nullable()->index();
+            $table->string('order_id')->unique();
             $table->string('item_name');
             $table->string('item_description')->nullable();
             $table->string('amount_gross');
             $table->string('amount_fee');
             $table->string('amount_net');
-            $table->unsignedBigInteger('order_id')->unique();
             $table->unsignedBigInteger('payfastPayment_id');
+            $table->string('tax');
             $table->string('currency', 3);
             $table->integer('quantity');
             $table->timestamp('paid_at');

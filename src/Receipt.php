@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisSystems\Payfast;
+namespace Laravel\Paddle;
 
 use Illuminate\Database\Eloquent\Model;
 use Money\Currency;
@@ -21,7 +21,7 @@ class Receipt extends Model
      */
     protected $casts = [
         'quantity' => 'integer',
-        'paid_at' => 'datetime:Y-m-d',
+        'paid_at' => 'datetime',
     ];
 
     /**
@@ -41,7 +41,7 @@ class Receipt extends Model
      */
     public function subscription()
     {
-        return $this->belongsTo(Cashier::$subscriptionModel, 'payfast_token', 'payfast_token');
+        return $this->belongsTo(Cashier::$subscriptionModel, 'paddle_subscription_id', 'paddle_id');
     }
 
     /**
@@ -49,29 +49,9 @@ class Receipt extends Model
      *
      * @return string
      */
-    public function amount_gross()
+    public function amount()
     {
-        return $this->formatAmount((int) ($this->amount_gross * 100));
-    }
-
-     /**
-     * Get the transaction fee that was paid.
-     *
-     * @return string
-     */
-    public function amount_fee()
-    {
-        return $this->formatAmount((int) ($this->amount_fee * 100));
-    }
-
-    /**
-     * Get the net amount after transaction fee that was paid.
-     *
-     * @return string
-     */
-    public function amount_net()
-    {
-        return $this->formatAmount((int) ($this->amount_net * 100));
+        return $this->formatAmount((int) ($this->amount * 100));
     }
 
     /**
@@ -95,33 +75,13 @@ class Receipt extends Model
     }
 
     /**
-     * Format the given amount_gross into a displayable currency.
+     * Format the given amount into a displayable currency.
      *
-     * @param  int  $amount_gross
+     * @param  int  $amount
      * @return string
      */
-    protected function formatAmountGross($amount_gross)
+    protected function formatAmount($amount)
     {
-        return Cashier::formatAmount($amount_gross, $this->currency);
-    }
-    /**
-     * Format the given amount_fee into a displayable currency.
-     *
-     * @param  int  $amount_fee
-     * @return string
-     */
-    protected function formatAmountFee($amount_fee)
-    {
-        return Cashier::formatAmount($amount_fee, $this->currency);
-    }
-    /**
-     * Format the given amount_net into a displayable currency.
-     *
-     * @param  int  $amount_net
-     * @return string
-     */
-    protected function formatAmountNet($amount_net)
-    {
-        return Cashier::formatAmount($amount_net, $this->currency);
+        return Cashier::formatAmount($amount, $this->currency);
     }
 }

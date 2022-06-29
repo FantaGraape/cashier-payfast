@@ -1,12 +1,10 @@
 <?php
 
-namespace EllisSystems\Payfast\Concerns;
+namespace Laravel\Paddle\Concerns;
 
 use InvalidArgumentException;
-use EllisSystems\Payfast\Cashier;
+use Laravel\Paddle\Cashier;
 use LogicException;
-
-/* REQUIRES REWRITE TO PAYFAST LOGIC */
 
 trait PerformsCharges
 {
@@ -29,7 +27,7 @@ trait PerformsCharges
         return $this->generatePayLink(array_merge([
             'title' => $title,
             'webhook_url' => Cashier::webhookUrl(),
-            'prices' => is_array($amount) ? $amount : [config('cashier.currency').':'.$amount],
+            'prices' => is_array($amount) ? $amount : [config('cashier.currency') . ':' . $amount],
         ], $options, $this->paddleOptions()));
     }
 
@@ -62,11 +60,11 @@ trait PerformsCharges
         // We'll need a way to identify the user in any webhook we're catching so before
         // we make the API request we'll attach the authentication identifier to this
         // payload so we can match it back to a user when handling Paddle webhooks.
-        if (! isset($payload['passthrough'])) {
+        if (!isset($payload['passthrough'])) {
             $payload['passthrough'] = [];
         }
 
-        if (! is_array($payload['passthrough'])) {
+        if (!is_array($payload['passthrough'])) {
             throw new LogicException('The value for "passthrough" always needs to be an array.');
         }
 
@@ -80,6 +78,55 @@ trait PerformsCharges
         }, $payload);
 
         return Cashier::post('/product/generate_pay_link', $payload)['response']['url'];
+    }
+
+    /**
+     * Generate a new order UUID.
+     *
+     * @param  array  $payload
+     * @return string
+     */
+    protected function generatePaymentUUID(array $payload)
+    {
+        $payload['email_address'] = $payload['email_address'] ?? (string) $this->email();
+        $payload['name_first'] = $payload['name_first'] ?? (string) $this->firstName();
+        $payload['name_last'] = $payload['name_last'] ?? (string) $this->lastName();
+        // We'll need a way to identify the user in any webhook we're catching so before
+        // we make the API request we'll attach the authentication identifier to this
+        // payload so we can match it back to a user when handling Payfast webhooks.
+        if (!isset($payload['custom_str1'])) {
+            $payload['custom_str1'] = [];
+        }
+        //Extra Passthrough
+        if (!isset($payload['custom_str2'])) {
+            $payload['custom_str2'] = [];
+        }
+        //Extra Passthrough
+        if (!is_array($payload['custom_str2'])) {
+            throw new LogicException('The value for "custom_str2" always needs to be an array.');
+        }
+        if (!is_array($payload['custom_str1'])) {
+            throw new LogicException('The value for "custom_str1" always needs to be an array.');
+        }
+
+        $payload['custom_str1']['billable_id'] = $this->getKey();
+        $payload['custom_str1']['billable_type'] = $this->getMorphClass();
+
+        $payload['custom_str1'] = json_encode($payload['custom_str1']);
+        $payload['custom_str2'] = json_encode($payload['custom_str2']);
+
+        if (strlen($payload['custom_str1']) > 255) {
+            throw new InvalidArgumentException('custom_str1 passthrough has a maximum length of 255 characters.');
+        }
+        if (strlen($payload['custom_str2']) > 255) {
+            throw new InvalidArgumentException('custom_str2 passthrough has a maximum length of 255 characters.');
+        }
+
+        $payload = array_map(function ($value) {
+            return is_string($value) ? trim($value) : $value;
+        }, $payload);
+
+        return Cashier::payfastPaymentApi()->onsite->generatepaymentIdentifier($payload);
     }
 
     /**

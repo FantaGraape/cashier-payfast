@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisSystems\Payfast\Components;
+namespace Laravel\Paddle\Components;
 
 use Illuminate\View\Component;
 

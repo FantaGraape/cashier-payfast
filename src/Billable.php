@@ -1,29 +1,29 @@
 <?php
 
-namespace EllisSystems\Payfast;
+namespace Laravel\Paddle;
 
-use EllisSystems\Payfast\Concerns\ManagesCustomer;
-use EllisSystems\Payfast\Concerns\ManagesReceipts;
-use EllisSystems\Payfast\Concerns\ManagesOrders;
-use EllisSystems\Payfast\Concerns\ManagesSubscriptions;
-use EllisSystems\Payfast\Concerns\PerformsCharges;
+use Laravel\Paddle\Concerns\ManagesCustomer;
+use Laravel\Paddle\Concerns\ManagesReceipts;
+use Laravel\Paddle\Concerns\ManagesSubscriptions;
+use Laravel\Paddle\Concerns\PerformsCharges;
+use Laravel\Paddle\Concerns\ManagesOrders;
 
 trait Billable
 {
     use ManagesCustomer;
-    use ManagesOrders;
     use ManagesSubscriptions;
     use ManagesReceipts;
     use PerformsCharges;
+    use ManagesOrders;
 
     /**
-     * Get the default payfast API options for the current Billable model.
+     * Get the default Paddle API options for the current Billable model.
      *
      * @param  array  $options
      * @return array
      */
-    public function payfastOptions(array $options = [])
+    public function paddleOptions(array $options = [])
     {
-        return Cashier::payfastOptions($options);
+        return Cashier::paddleOptions($options);
     }
 }

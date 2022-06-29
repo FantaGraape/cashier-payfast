@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisSystems\Payfast;
+namespace Laravel\Paddle;
 
 use Spatie\Url\Url;
 
@@ -9,7 +9,7 @@ class SubscriptionBuilder
     /**
      * The Billable model that is subscribing.
      *
-     * @var \EllisSystems\Payfast\Billable
+     * @var \Laravel\Paddle\Billable
      */
     protected $billable;
 
@@ -72,7 +72,7 @@ class SubscriptionBuilder
     /**
      * Create a new subscription builder instance.
      *
-     * @param  \EllisSystems\Payfast\Billable  $billable
+     * @param  \Laravel\Paddle\Billable  $billable
      * @param  string  $name
      * @param  int  $plan
      * @return void

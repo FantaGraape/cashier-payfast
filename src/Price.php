@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisSystems\Payfast;
+namespace Laravel\Paddle;
 
 use Money\Currency;
 

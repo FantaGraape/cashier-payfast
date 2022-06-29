@@ -1,12 +1,25 @@
 <?php
 
-namespace EllisSystems\Payfast\Concerns;
+namespace Laravel\Paddle\Concerns;
 
-use EllisSystems\Payfast\Cashier;
-use EllisSystems\Payfast\Order;
+use Laravel\Paddle\Cashier;
+use Laravel\Paddle\Order;
+use Laravel\Paddle\OrderBuilder;
 
 trait ManagesOrders
 {
+    /**
+     * Begin creating a new order.
+     *
+     * @param  string  $name
+     * @param  int  $plan
+     * @return \Laravel\Paddle\OrderBuilder;
+     */
+    public function newOrder($amount, $requestIp)
+    {
+        return new OrderBuilder($this, $amount, $requestIp);
+    }
+
     /**
      * Get all of the orders for the Billable model.
      *
@@ -18,14 +31,13 @@ trait ManagesOrders
     }
 
     /**
-     * Begin creating a new order.
+     * Get an order instance by id.
      *
      * @param  string  $name
-     * @param  int  $plan
-     * @return \EllisSystems\Payfast\SubscriptionBuilder
+     * @return \Laravel\Paddle\Order|null
      */
-    public function newOrder($name, $plan)
+    public function order($id)
     {
-        return new Order($this, $name, $plan);
+        return $this->orders->find($id)->first();
     }
 }

@@ -4,7 +4,7 @@ namespace Laravel\Paddle\Exceptions;
 
 use Exception;
 
-class InvalidPassthroughPayload extends Exception
+class PaddleException extends Exception
 {
     //
 }

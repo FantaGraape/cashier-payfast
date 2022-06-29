@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisSystems\Payfast;
+namespace Laravel\Paddle;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
@@ -49,7 +49,7 @@ class ProductPrice implements Arrayable, Jsonable, JsonSerializable
     /**
      * Get the price for the product with a coupon applied.
      *
-     * @return \EllisSystems\Payfast\Price
+     * @return \Laravel\Paddle\Price
      */
     public function price()
     {
@@ -59,7 +59,7 @@ class ProductPrice implements Arrayable, Jsonable, JsonSerializable
     /**
      * Get the original listed price for the product.
      *
-     * @return \EllisSystems\Payfast\Price
+     * @return \Laravel\Paddle\Price
      */
     public function listPrice()
     {
@@ -69,7 +69,7 @@ class ProductPrice implements Arrayable, Jsonable, JsonSerializable
     /**
      * Get the initial price for the subscription plan with a coupon applied.
      *
-     * @return \EllisSystems\Payfast\Price
+     * @return \Laravel\Paddle\Price
      */
     public function initialPrice()
     {
@@ -79,7 +79,7 @@ class ProductPrice implements Arrayable, Jsonable, JsonSerializable
     /**
      * Get the initial original listed price for the subscription plan.
      *
-     * @return \EllisSystems\Payfast\Price
+     * @return \Laravel\Paddle\Price
      */
     public function initialListPrice()
     {
@@ -89,7 +89,7 @@ class ProductPrice implements Arrayable, Jsonable, JsonSerializable
     /**
      * Get the recurring price for the subscription plan with a coupon applied.
      *
-     * @return \EllisSystems\Payfast\Price
+     * @return \Laravel\Paddle\Price
      */
     public function recurringPrice()
     {
@@ -101,7 +101,7 @@ class ProductPrice implements Arrayable, Jsonable, JsonSerializable
     /**
      * Get the recurring original listed price for the subscription plan.
      *
-     * @return \EllisSystems\Payfast\Price|null
+     * @return \Laravel\Paddle\Price|null
      */
     public function recurringListPrice()
     {

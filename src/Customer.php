@@ -1,11 +1,11 @@
 <?php
 
-namespace EllisSystems\Payfast;
+namespace Laravel\Paddle;
 
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property \EllisSystems\Payfast\Billable $billable
+ * @property \Laravel\Paddle\Billable $billable
  */
 class Customer extends Model
 {
@@ -36,7 +36,7 @@ class Customer extends Model
     }
 
     /**
-     * Determine if the Payfast model is on a "generic" trial at the model level.
+     * Determine if the Paddle model is on a "generic" trial at the model level.
      *
      * @return bool
      */
@@ -46,7 +46,7 @@ class Customer extends Model
     }
 
     /**
-     * Determine if the Payfast model has an expired "generic" trial at the model level.
+     * Determine if the Paddle model has an expired "generic" trial at the model level.
      *
      * @return bool
      */

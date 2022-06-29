@@ -1,8 +1,8 @@
 <?php
 
-namespace EllisSystems\Payfast\Concerns;
+namespace Laravel\Paddle\Concerns;
 
-use EllisSystems\Payfast\Cashier;
+use Laravel\Paddle\Cashier;
 
 trait ManagesCustomer
 {
@@ -10,7 +10,7 @@ trait ManagesCustomer
      * Create a customer record for the billable model.
      *
      * @param  array  $attributes
-     * @return \EllisSystems\Payfast\Customer
+     * @return \Laravel\Paddle\Customer
      */
     public function createAsCustomer(array $attributes = [])
     {
@@ -34,13 +34,21 @@ trait ManagesCustomer
      * @param  array  $options
      * @return \Illuminate\Support\Collection
      */
+    public function productPrices($products, array $options = [])
+    {
+        $options = array_merge([
+            'customer_country' => $this->paddleCountry(),
+        ], $options);
+
+        return Cashier::productPrices($products, $options);
+    }
 
     /**
-     * Get the billable model's email address to associate with Payfast.
+     * Get the billable model's email address to associate with Paddle.
      *
      * @return string|null
      */
-    public function payfastEmail()
+    public function paddleEmail()
     {
         return $this->email;
     }
@@ -54,8 +62,7 @@ trait ManagesCustomer
      *
      * @link https://developer.paddle.com/reference/platform-parameters/supported-countries
      */
-    /* PENDING REMOVAL */
-    public function payfastCountry()
+    public function paddleCountry()
     {
         //
     }
@@ -69,8 +76,7 @@ trait ManagesCustomer
      *
      * @link https://developer.paddle.com/reference/platform-parameters/supported-countries#countries-requiring-postcode
      */
-    /* PENDING REMOVAL */
-    public function payfastPostcode()
+    public function paddlePostcode()
     {
         //
     }

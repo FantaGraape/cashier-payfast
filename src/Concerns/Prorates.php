@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisSystems\Payfast\Concerns;
+namespace Laravel\Paddle\Concerns;
 
 trait Prorates
 {

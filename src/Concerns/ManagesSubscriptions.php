@@ -1,10 +1,10 @@
 <?php
 
-namespace EllisSystems\Payfast\Concerns;
+namespace Laravel\Paddle\Concerns;
 
-use EllisSystems\Payfast\Cashier;
-use EllisSystems\Payfast\Subscription;
-use EllisSystems\Payfast\SubscriptionBuilder;
+use Laravel\Paddle\Cashier;
+use Laravel\Paddle\Subscription;
+use Laravel\Paddle\SubscriptionBuilder;
 
 trait ManagesSubscriptions
 {
@@ -13,7 +13,7 @@ trait ManagesSubscriptions
      *
      * @param  string  $name
      * @param  int  $plan
-     * @return \EllisSystems\Payfast\SubscriptionBuilder
+     * @return \Laravel\Paddle\SubscriptionBuilder
      */
     public function newSubscription($name, $plan)
     {
@@ -34,7 +34,7 @@ trait ManagesSubscriptions
      * Get a subscription instance by name.
      *
      * @param  string  $name
-     * @return \EllisSystems\Payfast\Subscription|null
+     * @return \Laravel\Paddle\Subscription|null
      */
     public function subscription($name = 'default')
     {
@@ -173,7 +173,7 @@ trait ManagesSubscriptions
     public function onPlan($plan)
     {
         return ! is_null($this->subscriptions()
-            ->where('subscription_plan', $plan)
+            ->where('paddle_plan', $plan)
             ->get()
             ->first(function (Subscription $subscription) {
                 return $subscription->valid();

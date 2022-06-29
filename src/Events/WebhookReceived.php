@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisSystems\Payfast\Events;
+namespace Laravel\Paddle\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;

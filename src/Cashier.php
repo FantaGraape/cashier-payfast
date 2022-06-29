@@ -9,7 +9,7 @@ use Money\Currency;
 use Money\Formatter\IntlMoneyFormatter;
 use Money\Money;
 use NumberFormatter;
-use PayFast\PayFastPayment;
+
 
 class Cashier
 {
@@ -87,47 +87,6 @@ class Cashier
     public static function apiUrl()
     {
         return 'https://' . (config('cashier.sandbox') ? 'sandbox' : 'api') . '.payfast.co.za';
-    }
-    public function payfastPaymentApi()
-    {
-        $api = new PayFastPayment(
-            [
-                'merchantId' => config('cashier.merchant_id'),
-                'merchantKey' => config('cashier.merchant_key'),
-                'passPhrase' => config('cashier.passphrase'),
-                'testMode' => config('cashier.sandbox')
-            ]
-        );
-        return $api;
-    }
-
-
-    public function generateOrder($amount, $requestIP, $billable_id, $billable_type)
-    {
-        $customer = Cashier::$customerModel::firstOrCreate([
-            'billable_id' => $billable_id,
-            'billable_type' => $billable_type,
-        ])->billable;
-
-        $order = $customer->orders()->create([
-            'billable_id' => $billable_id,
-            'billable_type' => $billable_type,
-            'checkout_total' => $amount,
-            'ip_address' => $requestIP,
-        ]);
-
-        $props = array(
-            'm_payment_id' => $order->id,
-            'notify_url' => config('cashier.notify_url'),
-            'name_first' => $customer->last_name,
-            'name_last' => $customer->first_name,
-            'email_address' => $customer->email,
-            'item_name' => $order->id,
-            'custom_int1' => $billable_id,
-            'custom_str1' => $billable_type,
-        );
-        $uuid = $this->payfastPaymentApi->onsite->generatePaymentIdentifier($props);
-        return $uuid;
     }
 
     /**

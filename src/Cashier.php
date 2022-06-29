@@ -10,6 +10,7 @@ use Money\Formatter\IntlMoneyFormatter;
 use Money\Money;
 use NumberFormatter;
 use PayFast\PayFastPayment;
+use PayFast\PayFastApi;
 
 class Cashier
 {
@@ -106,7 +107,7 @@ class Cashier
      */
     public static function vendorsUrl()
     {
-        return 'https://'.(config('cashier.sandbox') ? 'sandbox-' : '').'vendors.paddle.com';
+        return 'https://' . (config('cashier.sandbox') ? 'sandbox-' : '') . 'vendors.paddle.com';
     }
 
     /**
@@ -116,7 +117,7 @@ class Cashier
      */
     public static function checkoutUrl()
     {
-        return 'https://'.(config('cashier.sandbox') ? 'sandbox-' : '').'checkout.paddle.com';
+        return 'https://' . (config('cashier.sandbox') ? 'sandbox-' : '') . 'checkout.paddle.com';
     }
 
     /**
@@ -130,7 +131,7 @@ class Cashier
      */
     public static function get($uri, array $payload = [])
     {
-        return static::makeApiCall('get', static::checkoutUrl().'/api/2.0'.$uri, $payload);
+        return static::makeApiCall('get', static::checkoutUrl() . '/api/2.0' . $uri, $payload);
     }
 
     /**
@@ -144,7 +145,7 @@ class Cashier
      */
     public static function post($uri, array $payload = [])
     {
-        return static::makeApiCall('post', static::vendorsUrl().'/api/2.0'.$uri, $payload);
+        return static::makeApiCall('post', static::vendorsUrl() . '/api/2.0' . $uri, $payload);
     }
 
     /**
@@ -170,7 +171,7 @@ class Cashier
 
     public static function payfastPaymentApi()
     {
-        $api = new PayFastPayment(
+        return new PayFastPayment(
             [
                 'merchantId' => config('cashier.merchant_id'),
                 'merchantKey' => config('cashier.merchant_key'),
@@ -178,7 +179,17 @@ class Cashier
                 'testMode' => config('cashier.sandbox')
             ]
         );
-        return $api;
+    }
+
+    public static function payfastApi()
+    {
+        return new PayFastApi(
+            [
+                'merchantId' => config('cashier.merchant_id'),
+                'passPhrase' => config('cashier.passphrase'),
+                'testMode' => config('cashier.sandbox')
+            ]
+        );
     }
 
 

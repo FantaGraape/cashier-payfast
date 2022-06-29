@@ -16,7 +16,7 @@ use Laravel\Paddle\Events\SubscriptionUpdated;
 use Laravel\Paddle\Events\WebhookHandled;
 use Laravel\Paddle\Events\WebhookReceived;
 use Laravel\Paddle\Exceptions\InvalidPassthroughPayload;
-use Laravel\Paddle\Http\Middleware\VerifyWebhookSignature;
+use Laravel\Paddle\Http\Middleware\VerifyWebhookNotification;
 use Laravel\Paddle\Subscription;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -29,9 +29,7 @@ class WebhookController extends Controller
      */
     public function __construct()
     {
-        if (config('cashier.public_key')) {
-            $this->middleware(VerifyWebhookSignature::class);
-        }
+        $this->middleware(VerifyWebhookNotification::class);
     }
 
     /**
@@ -40,30 +38,42 @@ class WebhookController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
+    /**
+     * Handle a Payfast webhook call.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function __invoke(Request $request)
     {
         $payload = $request->all();
-
-        if (! isset($payload['alert_name'])) {
-            return new Response();
-        }
-
-        $method = 'handle'.Str::studly($payload['alert_name']);
-
-        WebhookReceived::dispatch($payload);
-
-        if (method_exists($this, $method)) {
-            try {
-                $this->{$method}($payload);
-            } catch (InvalidPassthroughPayload $e) {
-                return new Response('Webhook Skipped');
+        if (isset($payload['token'])) {
+            switch ($payload['payment_status']) {
+                case 'COMPLETE':
+                    if ($this->findSubscription($payload['token'])) {
+                        $this->handleSubscriptionPaymentSucceeded($payload);
+                        WebhookHandled::dispatch($payload);
+                        return new Response('Webhook SubscriptionPayment handled');
+                    } else {
+                        $this->handleSubscriptionCreated($payload);
+                        WebhookHandled::dispatch($payload);
+                        return new Response('Webhook SubscriptionCreated handled');
+                    }
+                    break;
+                case 'CANCELLED':
+                    $this->handleSubscriptionCancelled($payload);
+                    WebhookHandled::dispatch($payload);
+                    return new Response('Webhook SubscriptionCancelled handled');
+                    break;
+                default:
+                    return new Response('Webhook Skipped');
             }
-
-            WebhookHandled::dispatch($payload);
-
-            return new Response('Webhook Handled');
         }
-
+        if (!isset($payload['token'])) {
+            $this->handlePaymentSucceeded($payload);
+            WebhookHandled::dispatch($payload);
+            return new Response('Webhook OneTimePayment handled');
+        }
         return new Response();
     }
 
@@ -75,21 +85,23 @@ class WebhookController extends Controller
      */
     protected function handlePaymentSucceeded(array $payload)
     {
-        if ($this->receiptExists($payload['order_id'])) {
+        if ($this->receiptExists($payload['m_payment_id'])) {
             return;
         }
 
-        $customer = $this->findOrCreateCustomer($payload['passthrough']);
+        $customer = $this->findOrCreateCustomer($payload['custom_str1']);
 
         $receipt = $customer->receipts()->create([
-            'checkout_id' => $payload['checkout_id'],
-            'order_id' => $payload['order_id'],
-            'amount' => $payload['sale_gross'],
-            'tax' => $payload['payment_tax'],
-            'currency' => $payload['currency'],
-            'quantity' => (int) $payload['quantity'],
-            'receipt_url' => $payload['receipt_url'],
-            'paid_at' => Carbon::createFromFormat('Y-m-d H:i:s', $payload['event_time'], 'UTC'),
+            'order_id' => $payload['m_payment_id'],
+            'payfastPayment_id' => $payload['pf_payment_id'],
+            'item_name' => $payload['item_name'],
+            'item_description' => $payload['item_description'],
+            'amount_gross' => $payload['amount_gross'],
+            'amount_fee' => $payload['amount_fee'],
+            'amount_net' => $payload['amount_net'],
+            'currency' => config('cashier.currency'),
+            'quantity' => (int) 1 /* $payload['quantity'] */,
+            'paid_at' => Carbon::now(),
         ]);
 
         PaymentSucceeded::dispatch($customer, $receipt, $payload);
@@ -107,22 +119,26 @@ class WebhookController extends Controller
             return;
         }
 
-        if ($subscription = $this->findSubscription($payload['subscription_id'])) {
+        if ($subscription = $this->findSubscription($payload['token'])) {
             $billable = $subscription->billable;
         } else {
-            $billable = $this->findOrCreateCustomer($payload['passthrough']);
+            $billable = $this->findOrCreateCustomer($payload['custom_str1']);
         }
 
         $receipt = $billable->receipts()->create([
-            'paddle_subscription_id' => $payload['subscription_id'],
-            'checkout_id' => $payload['checkout_id'],
-            'order_id' => $payload['order_id'],
-            'amount' => $payload['sale_gross'],
-            'tax' => $payload['payment_tax'],
-            'currency' => $payload['currency'],
-            'quantity' => (int) $payload['quantity'],
-            'receipt_url' => $payload['receipt_url'],
-            'paid_at' => Carbon::createFromFormat('Y-m-d H:i:s', $payload['event_time'], 'UTC'),
+            'payfast_token' => $payload['token'],
+            'order_id' => $payload['m_payment_id'],
+            'payfastPayment_id' => $payload['pf_payment_id'],
+            'item_name' => $payload['item_name'],
+            'item_description' => $payload['item_description'],
+            'amount_gross' => $payload['amount_gross'],
+            'amount_net' => $payload['amount_net'],
+            'amount_fee' => $payload['amount_fee'],
+            //Payfast only supports ZAR for now so we will use the config value - FUTURE USE
+            'currency' => config('cashier.currency'),
+            //Payfast doesnt natively support quantity - FUTURE USE
+            'quantity' => (int) 1,
+            'paid_at' => Carbon::now(),
         ]);
 
         SubscriptionPaymentSucceeded::dispatch($billable, $receipt, $payload);
@@ -136,7 +152,7 @@ class WebhookController extends Controller
      */
     protected function handleSubscriptionPaymentFailed(array $payload)
     {
-        if ($subscription = $this->findSubscription($payload['subscription_id'])) {
+        if ($subscription = $this->findSubscription($payload['token'])) {
             SubscriptionPaymentFailed::dispatch($subscription->billable, $payload);
         }
     }
@@ -151,13 +167,13 @@ class WebhookController extends Controller
      */
     protected function handleSubscriptionCreated(array $payload)
     {
-        $passthrough = json_decode($payload['passthrough'], true);
+        $passthrough = json_decode($payload['custom_str1'], true);
 
-        if (! is_array($passthrough) || ! isset($passthrough['subscription_name'])) {
+        if (!is_array($passthrough) || !isset($passthrough['subscription_name'])) {
             throw new InvalidPassthroughPayload;
         }
 
-        $customer = $this->findOrCreateCustomer($payload['passthrough']);
+        $customer = $this->findOrCreateCustomer($payload['custom_str1']);
 
         $trialEndsAt = $payload['status'] === Subscription::STATUS_TRIALING
             ? Carbon::createFromFormat('Y-m-d', $payload['next_bill_date'], 'UTC')->startOfDay()
@@ -165,10 +181,12 @@ class WebhookController extends Controller
 
         $subscription = $customer->subscriptions()->create([
             'name' => $passthrough['subscription_name'],
-            'paddle_id' => $payload['subscription_id'],
-            'paddle_plan' => $payload['subscription_plan_id'],
-            'paddle_status' => $payload['status'],
-            'quantity' => $payload['quantity'],
+            'order_id' => $payload['m_payment_id'],
+            'payfast_token' => $payload['token'],
+            'last_cycle' => Carbon::now(),
+            'next_cycle' => $payload['billing_date'],
+            'payfast_status' => ($payload['payment_status'] == 'COMPLETE') ? 'active' : 'deleted',
+            'quantity' => (int) 1,
             'trial_ends_at' => $trialEndsAt,
         ]);
 
@@ -183,24 +201,24 @@ class WebhookController extends Controller
      */
     protected function handleSubscriptionUpdated(array $payload)
     {
-        if (! $subscription = $this->findSubscription($payload['subscription_id'])) {
+        if (!$subscription = $this->findSubscription($payload['token'])) {
             return;
         }
 
         // Plan...
-        if (isset($payload['subscription_plan_id'])) {
+        /* if (isset($payload['subscription_plan_id'])) {
             $subscription->paddle_plan = $payload['subscription_plan_id'];
-        }
+        } */
 
         // Status...
-        if (isset($payload['status'])) {
+       /*  if (isset($payload['status'])) {
             $subscription->paddle_status = $payload['status'];
-        }
+        } */
 
         // Quantity...
-        if (isset($payload['new_quantity'])) {
+        /* if (isset($payload['new_quantity'])) {
             $subscription->quantity = $payload['new_quantity'];
-        }
+        } */
 
         // Paused...
         if (isset($payload['paused_from'])) {
@@ -222,11 +240,11 @@ class WebhookController extends Controller
      */
     protected function handleSubscriptionCancelled(array $payload)
     {
-        if (! $subscription = $this->findSubscription($payload['subscription_id'])) {
+        if (!$subscription = $this->findSubscription($payload['token'])) {
             return;
         }
 
-        // Cancellation date...
+        // Cancellation date... //TODO
         if (is_null($subscription->ends_at)) {
             $subscription->ends_at = $subscription->onTrial()
                 ? $subscription->trial_ends_at
@@ -235,7 +253,7 @@ class WebhookController extends Controller
 
         // Status...
         if (isset($payload['status'])) {
-            $subscription->paddle_status = $payload['status'];
+            $subscription->payfast_status = ($payload['payment_status'] == 'CANCELLED') ? 'deleted' : 'active' ;
         }
 
         $subscription->paused_from = null;
@@ -257,7 +275,7 @@ class WebhookController extends Controller
     {
         $passthrough = json_decode($passthrough, true);
 
-        if (! is_array($passthrough) || ! isset($passthrough['billable_id'], $passthrough['billable_type'])) {
+        if (!is_array($passthrough) || !isset($passthrough['billable_id'], $passthrough['billable_type'])) {
             throw new InvalidPassthroughPayload;
         }
 
@@ -267,15 +285,15 @@ class WebhookController extends Controller
         ])->billable;
     }
 
-    /**
-     * Find the first subscription matching a Paddle subscription id.
+   /**
+     * Find the first subscription matching a Payfast subscription token.
      *
      * @param  string  $subscriptionId
-     * @return \Laravel\Paddle\Subscription|null
+     * @return \EllisSystems\Payfast\Subscription|null
      */
-    protected function findSubscription(string $subscriptionId)
+    protected function findSubscription(string $payfastToken)
     {
-        return Cashier::$subscriptionModel::firstWhere('paddle_id', $subscriptionId);
+        return Cashier::$subscriptionModel::firstWhere('payfast_token', $payfastToken);
     }
 
     /**

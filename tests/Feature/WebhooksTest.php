@@ -14,7 +14,7 @@ class WebhooksTest extends FeatureTestCase
 {
     public function test_gracefully_handle_webhook_without_alert_name()
     {
-        $this->postJson('paddle/webhook', [
+        $this->postJson('payfast/webhook', [
             'event_time' => now()->addDay()->format('Y-m-d H:i:s'),
         ])->assertOk();
     }

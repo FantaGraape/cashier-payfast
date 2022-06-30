@@ -14,7 +14,7 @@ class PaymentTest extends FeatureTestCase
         $this->assertSame('€12.45', $payment->amount());
         $this->assertSame('12.45', $payment->rawAmount());
         $this->assertInstanceOf(Currency::class, $payment->currency());
-        $this->assertSame('EUR', $payment->currency()->getCode());
+        $this->assertSame('ZAR', $payment->currency()->getCode());
     }
 
     public function test_it_can_be_serialized_to_an_array()
@@ -23,7 +23,7 @@ class PaymentTest extends FeatureTestCase
 
         $this->assertSame([
             'amount' => '€12.45',
-            'currency' => 'EUR',
+            'currency' => 'ZAR',
             'date' => '2020-05-07T00:00:00+00:00',
         ], $payment->toArray());
     }

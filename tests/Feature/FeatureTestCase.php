@@ -17,7 +17,7 @@ abstract class FeatureTestCase extends TestCase
         $this->artisan('migrate')->run();
     }
 
-    protected function createBillable($description = 'taylor', array $options = []): User
+    protected function createBillable($description = 'Timothy', array $options = []): User
     {
         $user = $this->createUser($description);
 
@@ -26,11 +26,11 @@ abstract class FeatureTestCase extends TestCase
         return $user;
     }
 
-    protected function createUser($description = 'taylor', array $options = []): User
+    protected function createUser($description = 'Timothy', array $options = []): User
     {
         return User::create(array_merge([
-            'email' => "{$description}@paddle-test.com",
-            'name' => 'Taylor Otwell',
+            'email' => "{$description}@payfast-test.com",
+            'name' => 'Timothy Ellis',
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
         ], $options));
     }

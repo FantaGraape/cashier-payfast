@@ -382,6 +382,17 @@ class Cashier
         CashierFake::assertSubscriptionCreated($callback);
     }
 
+     /**
+     * Pass-thru to the CashierFake method of the same name.
+     *
+     * @param  callable|int|null  $callback
+     * @return void
+     */
+    public static function assertOrderCreated($callback = null)
+    {
+        CashierFake::assertOrderCreated($callback);
+    }
+
     /**
      * Pass-thru to the CashierFake method of the same name.
      *

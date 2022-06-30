@@ -12,6 +12,7 @@ use EllisSystems\Payfast\Events\SubscriptionCreated;
 use EllisSystems\Payfast\Events\SubscriptionPaymentFailed;
 use EllisSystems\Payfast\Events\SubscriptionPaymentSucceeded;
 use EllisSystems\Payfast\Events\SubscriptionUpdated;
+use EllisSystems\Payfast\Events\OrderCreated;
 
 class CashierFake
 {
@@ -53,6 +54,7 @@ class CashierFake
 
         Event::fake(array_merge([
             PaymentSucceeded::class,
+            OrderCreated::class,
             SubscriptionCreated::class,
             SubscriptionUpdated::class,
             SubscriptionCancelled::class,
@@ -183,6 +185,17 @@ class CashierFake
         Event::assertDispatched(SubscriptionCreated::class, $callback);
     }
 
+     /**
+     * Assert if the OrderCreated event was dispatched based on a truth-test callback.
+     *
+     * @param  callable|int|null  $callback
+     * @return void
+     */
+    public static function assertOrderCreated($callback = null)
+    {
+        Event::assertDispatched(OrderCreated::class, $callback);
+    }
+
     /**
      * Assert if the SubscriptionCreated event was not dispatched based on a truth-test callback.
      *
@@ -192,6 +205,17 @@ class CashierFake
     public static function assertSubscriptionNotCreated($callback = null)
     {
         Event::assertNotDispatched(SubscriptionCreated::class, $callback);
+    }
+
+     /**
+     * Assert if the OrderCreated event was not dispatched based on a truth-test callback.
+     *
+     * @param  callable|int|null  $callback
+     * @return void
+     */
+    public static function assertOrderNotCreated($callback = null)
+    {
+        Event::assertNotDispatched(OrderCreated::class, $callback);
     }
 
     /**

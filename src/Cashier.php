@@ -3,7 +3,7 @@
 namespace EllisSystems\Payfast;
 
 use Illuminate\Support\Facades\Http;
-use EllisSystems\Payfast\Exceptions\PaddleException;
+use EllisSystems\Payfast\Exceptions\PayfastException;
 use Money\Currencies\ISOCurrencies;
 use Money\Currency;
 use Money\Formatter\IntlMoneyFormatter;
@@ -127,7 +127,7 @@ class Cashier
      * @param  array  $payload
      * @return \Illuminate\Http\Client\Response
      *
-     * @throws \EllisSystems\Payfast\Exceptions\PaddleException
+     * @throws \EllisSystems\Payfast\Exceptions\PayfastException
      */
     public static function get($uri, array $payload = [])
     {
@@ -141,7 +141,7 @@ class Cashier
      * @param  array  $payload
      * @return \Illuminate\Http\Client\Response
      *
-     * @throws \EllisSystems\Payfast\Exceptions\PaddleException
+     * @throws \EllisSystems\Payfast\Exceptions\PayfastException
      */
     public static function post($uri, array $payload = [])
     {
@@ -156,14 +156,14 @@ class Cashier
      * @param  array  $payload
      * @return \Illuminate\Http\Client\Response
      *
-     * @throws \EllisSystems\Payfast\Exceptions\PaddleException
+     * @throws \EllisSystems\Payfast\Exceptions\PayfastException
      */
     protected static function makeApiCall($method, $uri, array $payload = [])
     {
         $response = Http::$method($uri, $payload);
 
         if ($response['success'] === false) {
-            throw new PaddleException($response['error']['message'], $response['error']['code']);
+            throw new PayfastException($response['error']['message'], $response['error']['code']);
         }
 
         return $response;

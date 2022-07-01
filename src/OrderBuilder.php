@@ -15,6 +15,13 @@ class OrderBuilder
     protected $billable;
 
     /**
+     * The metadata to apply to the subscription.
+     *
+     * @var array
+     */
+    protected $metadata = [];
+
+    /**
      * The IP of the order request.
      *
      * @var string
@@ -50,6 +57,13 @@ class OrderBuilder
     protected $emailAddress;
 
     /**
+     * The notify url.
+     *
+     * @var string
+     */
+    protected $notifyURL;
+
+    /**
      * The order id to be sent back on webhook.
      *
      * @var string
@@ -71,8 +85,9 @@ class OrderBuilder
      * @param  string  $requestIp
      * @return void
      */
-    public function __construct($billable, $amount, $requestIp)
+    public function __construct($billable, $name, $amount, $requestIp)
     {
+        $this->name = $name;
         $this->amount = $amount;
         $this->requestIp = $requestIp;
         $this->billable = $billable;
@@ -185,16 +200,16 @@ class OrderBuilder
             'billable_id' => $this->billable->getKey(),
             'billable_type' => $this->billable->getMorphClass(),
             'checkout_total' => $this->amount,
-            'ip_address' => $this->requestIP,
+            'ip_address' => $this->requestIp,
         ]);
         $this->m_payment_id = $order->id;
         $payload = $this->buildPayload();
-        $payload['custom_str2'] = $options;
         $payload['custom_str1'] = array_merge($this->metadata, [
             'subscription_name' => $this->name,
         ]);
+        $payload['custom_str2'] = $options;
 
-        return Cashier::payfastPaymentApi()->onsite->generatepaymentIdentifier($payload);
+        return $this->billable->generatePaymentUUID($payload);
     }
 
     /**
@@ -205,12 +220,13 @@ class OrderBuilder
     protected function buildPayload()
     {
         return [
-            'm_payment_id' => $this->m_payment_id,
-            'item_name' => $this->m_payment_id, //WIP
-            'name_last' => $this->lastName,
-            'name_first' => $this->firstName,
-            'email_address' => $this->emailAddress,
             'notify_url' => $this->notifyURL ? $this->notifyURL : config('cashier.notify_url'),
+            'name_first' => $this->firstName,
+            'name_last' => $this->lastName,
+            'email_address' => $this->emailAddress,
+            'm_payment_id' => strval($this->m_payment_id),
+            'amount' => number_format(sprintf('%.2f', $this->amount), 2, '.', ''),
+            'item_name' => strval($this->m_payment_id), //WIP
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace EllisSystems\Payfast\Concerns;
 use InvalidArgumentException;
 use EllisSystems\Payfast\Cashier;
 use LogicException;
+use Illuminate\Support\Facades\Log;
 
 trait PerformsCharges
 {
@@ -86,7 +87,7 @@ trait PerformsCharges
      * @param  array  $payload
      * @return string
      */
-    protected function generatePaymentUUID(array $payload)
+    public function generatePaymentUUID(array $payload)
     {
         $payload['email_address'] = $payload['email_address'] ?? (string) $this->email();
         $payload['name_first'] = $payload['name_first'] ?? (string) $this->firstName();
@@ -125,6 +126,7 @@ trait PerformsCharges
         $payload = array_map(function ($value) {
             return is_string($value) ? trim($value) : $value;
         }, $payload);
+        Log::debug($payload);
 
         return Cashier::payfastPaymentApi()->onsite->generatepaymentIdentifier($payload);
     }

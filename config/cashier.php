@@ -10,7 +10,7 @@ return [
     | Payfast Portal.
     |
     */
-    'merchant_id' => env('PAYFAST_MERCHANT_ID', '10026426'),
+    'merchant_id' => env('PAYFAST_MERCHANT_ID'),
     /*
     |--------------------------------------------------------------------------
     | Payfast Merchant KEY
@@ -20,7 +20,7 @@ return [
     | Payfast Portal.
     |
     */
-    'merchant_key' => env('PAYFAST_MERCHANT_KEY', 'nkoq82zstric8'),
+    'merchant_key' => env('PAYFAST_MERCHANT_KEY'),
     /*
     |--------------------------------------------------------------------------
     | Payfast Passphrase
@@ -31,7 +31,7 @@ return [
     | Payfast Portal.
     |
     */
-    'passphrase' => env('PAYFAST_PASSPHRASE', 'PfN9Xxxh5TUK4xwFs'),
+    'passphrase' => env('PAYFAST_PASSPHRASE'),
     'proxy' => env('PAYFAST_PROXY'),
     /*
     |--------------------------------------------------------------------------

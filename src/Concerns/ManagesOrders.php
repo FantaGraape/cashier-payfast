@@ -11,13 +11,14 @@ trait ManagesOrders
     /**
      * Begin creating a new order.
      *
+     * @param  int  $amount
      * @param  string  $name
-     * @param  int  $plan
+     * @param  string  $requestIp
      * @return \EllisSystems\Payfast\OrderBuilder;
      */
-    public function newOrder($amount, $requestIp)
+    public function newOrder($name, $amount, $requestIp)
     {
-        return new OrderBuilder($this, $amount, $requestIp);
+        return new OrderBuilder($this, $name, $amount, $requestIp);
     }
 
     /**

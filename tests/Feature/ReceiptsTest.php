@@ -19,6 +19,6 @@ class ReceiptsTest extends FeatureTestCase
         $this->assertSame('12.45', $receipt->amount);
         $this->assertSame('€4.36', $receipt->tax());
         $this->assertInstanceOf(Currency::class, $receipt->currency());
-        $this->assertSame('EUR', $receipt->currency()->getCode());
+        $this->assertSame('ZAR', $receipt->currency()->getCode());
     }
 }

@@ -85,8 +85,8 @@ return [
     | a custom URL when required for any application testing purposes.
     |
     */
-    'notify_url' => env('PAYFAST_NOTIFY_URL', 'https://9a28-102-165-226-14.sa.ngrok.io' . '/payfast/webhook'),
-    'return_url' => env('PAYFAST_RETURN_URL', 'https://ellis-systems.tech/dashboard'),
+    'notify_url' => env('PAYFAST_NOTIFY_URL'),
+    'return_url' => env('PAYFAST_RETURN_URL'),
     'webhook' => env('CASHIER_WEBHOOK'),
 
     /*

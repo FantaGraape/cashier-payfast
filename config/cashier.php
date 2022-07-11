@@ -85,8 +85,9 @@ return [
     | a custom URL when required for any application testing purposes.
     |
     */
-    'notify_url' => env('PAYFAST_NOTIFY_URL'),
-    'return_url' => env('PAYFAST_RETURN_URL'),
+    'return_url' => env('PAYFAST_RETURN_URL', config('app.url') . '/payfast/success'),
+    'cancel_url' => env('PAYFAST_CANCEL_URL', config('app.url') . '/payfast/cancel'),
+    'notify_url' => env('PAYFAST_NOTIFY_URL', config('app.url') . '/payfast/webhook'),
     'webhook' => env('CASHIER_WEBHOOK'),
 
     /*

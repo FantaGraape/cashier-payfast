@@ -1,27 +1,107 @@
-<p align="center"><img src="/art/logo.svg" alt="Logo Laravel Cashier Paddle"></p>
-
-<p align="center">
-    <a href="https://github.com/laravel/cashier-paddle/actions">
-        <img src="https://github.com/laravel/cashier-paddle/workflows/tests/badge.svg" alt="Build Status">
-    </a>
-    <a href="https://packagist.org/packages/laravel/cashier-paddle">
-        <img src="https://img.shields.io/packagist/dt/laravel/cashier-paddle" alt="Total Downloads">
-    </a>
-    <a href="https://packagist.org/packages/laravel/cashier-paddle">
-        <img src="https://img.shields.io/packagist/v/laravel/cashier-paddle" alt="Latest Stable Version">
-    </a>
-    <a href="https://packagist.org/packages/laravel/cashier-paddle">
-        <img src="https://img.shields.io/packagist/l/laravel/cashier-paddle" alt="License">
-    </a>
-</p>
-
 ## Introduction
 
-Laravel Cashier Paddle provides an expressive, fluent interface to [Paddle's](https://paddle.com) subscription billing services. It handles almost all of the boilerplate subscription billing code you are dreading writing. In addition to basic subscription management, Cashier can handle coupons, swapping subscription, subscription "quantities", cancellation grace periods and much more.
+EllisSystems Cashier payfast provides an expressive, fluent interface to [Payfast's](https://payfast.co.za) subscription billing services. It handles almost all of the boilerplate subscription billing code you are dreading writing. In addition to basic subscription management, Cashier can handle coupons, swapping subscription, subscription "quantities", cancellation grace periods and much more.
+
+## Getting Started
+
+Install the pacakge via composer: (WIP)
+
+```bash
+composer require ellissystems/cashier-payfast
+```
+
+## Publish Configuration
+
+Publish the config file with:
+
+```bash
+php artisan vendor:publish --provider="EllisSystems\Payfast\CashierServiceProvider" --tag="cashier-config"
+```
+
+## Migrations
+
+A migration is needed to create Customers, Orders, Receipts and Subscriptions tables:
+
+```bash
+php artisan migrate
+```
+
+## Example Configuration
+
+`config/cashier.php`:
+
+```php
+<?php
+
+return [
+    'merchant_id' => env('PAYFAST_MERCHANT_ID', '123456'),
+    'merchant_key' => env('PAYFAST_MERCHANT_KEY', '7890000'),
+    'passphrase' => env('PAYFAST_PASSPHRASE', 'payfast'),
+    'proxy' => env('PAYFAST_PROXY'),
+    'sandbox' => env('PAYFAST_TESTMODE', true),
+    'return_url' => env('PAYFAST_RETURN_URL', config('app.url') . '/payfast/success'),
+    'cancel_url' => env('PAYFAST_CANCEL_URL', config('app.url') . '/payfast/cancel'),
+    'notify_url' => env('PAYFAST_NOTIFY_URL', config('app.url') . '/payfast/webhook'),
+    'currency' => env('CASHIER_CURRENCY', 'ZAR'),
+    'currency_locale' => env('CASHIER_CURRENCY_LOCALE', 'en'),
+
+];
+```
+
+## Billable Trait
+
+`app/http/models/user.php`:
+
+Add the billable trait to the user model.
+
+```php
+<?php
+
+namespace App\Models;
+
+/* .... */
+use EllisSystems\Payfast\Billable;
+
+class User extends Authenticatable
+{
+    use /* .... */ Billable;
+
+    /* ..... */
+}
+```
+
+## Create a new order
+
+`app/http/Controllers/PaymentController.php`:
+
+```php
+<?php
+/* ..... */
+ public function store(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required'
+        ]);
+        $user = $request->user();
+        $uuid = $user->newOrder('default', $request['amount'], $request->ip())->withFirstName('FirstName')
+        ->withLastName('LastName')
+        ->withEmailAddress($user->email)
+        ->create();
+        return response()->json(['uuid' => $uuid], 200);
+    }
+/* ...... */
+```
+
+## Trigger Payfast Modal
+
+```javascript
+
+```
+
 
 ## Official Documentation
 
-Documentation for Cashier Paddle can be found on the [Laravel website](https://laravel.com/docs/cashier-paddle).
+Documentation for Cashier Payfast can be found on the [Laravel website](https://laravel.com/docs/cashier-paddle).
 
 ## Contributing
 
@@ -33,8 +113,8 @@ In order to ensure that the Laravel community is welcoming to all, please review
 
 ## Security Vulnerabilities
 
-Please review [our security policy](https://github.com/laravel/cashier-paddle/security/policy) on how to report security vulnerabilities.
+Please review [our security policy](https://github.com/fantagraape/cashier-payfast/security/policy) on how to report security vulnerabilities.
 
 ## License
 
-Laravel Cashier Paddle is open-sourced software licensed under the [MIT license](LICENSE.md).
+Laravel Cashier Payfast is open-sourced software licensed under the [MIT license](LICENSE.md).

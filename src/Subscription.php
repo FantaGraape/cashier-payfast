@@ -80,6 +80,7 @@ class Subscription extends Model
         return $this->hasMany(Cashier::$receiptModel, 'paddle_subscription_id', 'paddle_id')->orderByDesc('created_at');
     }
 
+
     /**
      * Determine if the subscription has a specific plan.
      *
@@ -565,46 +566,6 @@ class Subscription extends Model
     }
 
     /**
-     * Begin creating a new modifier.
-     *
-     * @param  float  $amount
-     * @return \EllisSystems\Payfast\ModifierBuilder
-     */
-    public function newModifier($amount)
-    {
-        return new ModifierBuilder($this, $amount);
-    }
-
-    /**
-     * Get all of the modifiers for this subscription.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function modifiers()
-    {
-        $result = Cashier::post('/subscription/modifiers', array_merge([
-            'subscription_id' => $this->paddle_id,
-        ], $this->billable->paddleOptions()));
-
-        return collect($result['response'])->map(function (array $modifier) {
-            return new Modifier($this, $modifier);
-        });
-    }
-
-    /**
-     * Get a modifier instance by ID.
-     *
-     * @param  int  $id
-     * @return \EllisSystems\Payfast\Modifier|null
-     */
-    public function modifier($id)
-    {
-        return $this->modifiers()->first(function (Modifier $modifier) use ($id) {
-            return $modifier->id() === $id;
-        });
-    }
-
-    /**
      * Cancel the subscription at the end of the current billing period.
      *
      * @return $this
@@ -694,7 +655,7 @@ class Subscription extends Model
         return new Payment($payment['amount'], $payment['currency'], $payment['date']);
     }
 
-      /**
+    /**
      * Get the next payment for the subscription.
      *
      * @return \EllisSystems\Payfast\Payment|null
@@ -711,7 +672,7 @@ class Subscription extends Model
     }
 
 
-     /**
+    /**
      * Get the payment method type from the subscription.
      *
      * @return string
@@ -721,7 +682,7 @@ class Subscription extends Model
         return (string) ($this->payfastInfo()['payment_method'] ?? '');
     }
 
-     /**
+    /**
      * Return the URL for updating card details associated with subscription
      *
      * @return string
@@ -731,7 +692,7 @@ class Subscription extends Model
         return (string) ('https://' . (config('cashier.sandbox') ? 'www' : 'sandbox') . '.payfast.co.za/eng/' . ($this->payfast_token) . '?return=' . config('cashier.return_url'));
     }
 
-     /**
+    /**
      * Get raw information about the subscription from Payfast.
      *
      * @return array

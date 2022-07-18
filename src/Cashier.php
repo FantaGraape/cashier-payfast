@@ -56,6 +56,8 @@ class Cashier
      */
     public static $subscriptionModel = Subscription::class;
 
+
+
     /**
      * The receipt model class name.
      *
@@ -382,7 +384,7 @@ class Cashier
         CashierFake::assertSubscriptionCreated($callback);
     }
 
-     /**
+    /**
      * Pass-thru to the CashierFake method of the same name.
      *
      * @param  callable|int|null  $callback
